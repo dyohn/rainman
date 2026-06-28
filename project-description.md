@@ -1,4 +1,4 @@
-◊# Rainman — Distributed Key-Value Storage Engine
+# Rainman — Distributed Key-Value Storage Engine
 ## with Agentic Fault Injection and Consistency Monitoring
 
 **Course:** Independent Study

@@ -1,202 +1,540 @@
-# Distributed Key-Value Storage Engine with Agentic Fault Injection and Consistency Monitoring
+◊# Rainman — Distributed Key-Value Storage Engine
+## with Agentic Fault Injection and Consistency Monitoring
 
 **Course:** Independent Study
-**Timeline:** Four Weeks (Part-Time)
-**Reference Text:** *Designing Data-Intensive Applications* — Martin Kleppmann (Release 17, November 2021)
+**Timeline:** Part-time, due July 8, 2026
+**Reference:** *Designing Data-Intensive Applications* — Martin Kleppmann (Release 17, 2021)
 
 ---
 
-## Overview
+## 1. System Overview
 
-This project implements a miniature distributed key-value storage engine designed to demonstrate core principles from *Designing Data-Intensive Applications*: replication, fault tolerance, consistency, and recovery. The system is augmented with two lightweight AI agents — an Adversarial Fault Injector and a Consistency Observer — that automate failure scenarios and monitor cluster health in real time. Together, the system and its agents provide an end-to-end demonstration of how distributed storage systems behave under failure conditions and how those failures can be observed and reasoned about.
+Rainman is a three-node, leader-based, replicated key-value store built from scratch
+in Python and deployed as a Docker cluster. It is exercised by streaming a sample of
+the Yelp Open Dataset through the cluster while two hybrid AI agents inject faults and
+monitor cluster health. Correctness is evaluated against a pre-computed oracle derived
+offline from the same dataset.
 
----
-
-## Core System
-
-### Architecture
-
-- **Three-node cluster** deployed via Docker containers, each simulating an independent host
-- **Leader-based replication** — one elected leader accepts writes and propagates them to follower nodes
-- **Key-value interface** — simple `get`, `set`, and `delete` operations
-- **Replication log** — all writes are logged per node to support recovery and agent observation
-
-### Replication Model
-
-The system uses a single-leader replication model consistent with Chapter 5 of DDIA. The leader is the authoritative source of truth for writes. Followers replicate asynchronously and serve reads. Leader election is handled via a lightweight consensus mechanism (e.g., Raft or a simplified equivalent).
-
-### Failure and Recovery
-
-The system must demonstrate:
-
-- **Leader failure** — detection, election of a new leader, and follower resynchronization
-- **Network partition** — isolation of one or more nodes into disconnected groups (split-brain scenario)
-- **Node rejoin** — a previously partitioned or failed node rejoins the cluster and resynchronizes without data loss
-
-Recovery is defined as: *all live nodes agree on the same data state, the elected leader is unambiguous, and no acknowledged writes have been lost.*
+The research contribution is the study of LLM-driven agentic processes as a fault
+management mechanism in a distributed system with known, verifiable correctness
+properties. The system being tested must be fundamentally correct — without that
+foundation, no observation of the agents is scientifically meaningful.
 
 ---
 
-## AI Agent Components
+## 2. Storage Engine (Per Node)
 
-### Agent 1: Adversarial Fault Injector
+### 2.1 In-Memory Index
 
-**Role:** Autonomously introduces failures into the cluster based on observed system state.
+A plain Python `dict` mapping `str` keys to `dict` values. This is the live,
+queryable state of the node. It is never persisted directly — it is always
+reconstructed from the WAL on startup.
+
+### 2.2 Write-Ahead Log (WAL)
+
+An append-only file of newline-delimited JSON records, one per line.
+
+**WAL entry schema:**
+```json
+{
+  "lsn": 42,
+  "term": 1,
+  "op": "PUT",
+  "key": "tnhfDv5Il8EaGSXZGiuQGg",
+  "value": {"name": "Garaje", "stars": 4.31, "review_count": 312}
+}
+```
+
+- `lsn` — Log Sequence Number. Strictly monotonically increasing. Never reused.
+- `term` — Leadership term. Increments on each election.
+- `op` — Only `PUT` is implemented. DELETE is out of scope.
+- `key` — String. In the Yelp workload, always a `business_id`.
+- `value` — Any JSON-serializable dict.
+
+**Write procedure (enforced in `storage.py`):**
+1. Serialize entry to JSON and append to WAL file
+2. Call `file.flush()` then `os.fsync(file.fileno())`
+3. Update in-memory dict
+4. Return success
+
+Step 2 is mandatory. It is what makes the log "write-ahead" — the record survives
+a crash before the in-memory state is updated.
+
+**Crash recovery / startup procedure:**
+1. Open WAL file (create if absent)
+2. Read line by line; skip and log any malformed lines (do not crash on corruption)
+3. Apply each valid entry to the dict in order
+4. Set current LSN to the highest LSN seen
+5. Node is now ready to accept requests
+
+### 2.3 `StorageEngine` Interface (`src/rainman/node/storage.py`)
+
+```python
+class StorageEngine:
+    def __init__(self, wal_path: str) -> None: ...
+    def replay(self) -> int: ...           # returns highest LSN seen; called on startup
+    def put(self, lsn: int, term: int, key: str, value: dict) -> None: ...
+    def get(self, key: str) -> dict | None: ...
+    def current_lsn(self) -> int: ...
+    def snapshot(self) -> dict: ...        # returns a full copy of the dict
+```
+
+---
+
+## 3. Node API (`src/rainman/node/main.py`)
+
+Each node is a FastAPI application running inside a Docker container. All three
+containers share a private Docker bridge network (`rainman_net`). Container
+hostnames are `node1`, `node2`, `node3`, all listening on port `8000` internally,
+mapped to distinct host ports for external access.
+
+### 3.1 Endpoints
+
+#### `GET /health`
+Returns node identity and current state. Polled by the recovery agent.
+
+```json
+{
+  "node_id": "node1",
+  "role": "leader",
+  "term": 2,
+  "lsn": 304,
+  "leader_id": "node1",
+  "timestamp": "2026-06-28T14:32:01.123Z"
+}
+```
+
+#### `PUT /kv/{key}`
+Write a value. Accepted only by the leader; rejected by followers.
+
+**Request body:** `{"value": {...}}`
+
+**Success (200):** `{"status": "ok", "lsn": 305}`
+
+**Rejected by follower (409):** `{"status": "not_leader", "leader_id": "node1"}`
+
+#### `GET /kv/{key}`
+Read from local dict. Any node accepts reads (no forwarding).
+
+**Found (200):** `{"key": "...", "value": {...}, "lsn": 305, "node_id": "node1"}`
+
+**Not found (404):** `{"status": "not_found"}`
+
+#### `POST /replicate`
+Called by the leader to push a WAL entry to a follower.
+
+**Request body:** `{"lsn": 305, "term": 2, "op": "PUT", "key": "...", "value": {...}}`
+
+**Success (200):** `{"status": "ok", "lsn": 305}`
+
+**Term mismatch (409):** `{"status": "term_mismatch", "current_term": 3}`
+
+**LSN gap detected (409):** `{"status": "lsn_gap", "expected": 300, "got": 305}`
+
+#### `POST /heartbeat`
+Called by leader every 200ms. Follower resets its election timeout on receipt.
+
+**Request body:** `{"leader_id": "node1", "term": 2, "lsn": 304}`
+
+**Response (200):** `{"status": "ok"}`
+
+#### `POST /vote`
+Vote request during leader election.
+
+**Request body:** `{"candidate_id": "node2", "term": 3, "candidate_lsn": 304}`
+
+**Grant (200):** `{"vote_granted": true, "term": 3}`
+
+**Deny (200):** `{"vote_granted": false, "term": 3, "reason": "already_voted"}`
+
+#### `POST /admin/inject_delay`
+Used by the adversary agent to toggle artificial response delay on this node.
+Set `delay_ms` to 0 to clear.
+
+**Request body:** `{"delay_ms": 500}`
+
+---
+
+## 4. Replication (`src/rainman/node/replication.py`)
+
+### 4.1 Leader Write Path
+
+On receiving a valid `PUT /kv/{key}`:
+1. Generate next LSN (`current_lsn + 1`)
+2. Write entry to own WAL via `StorageEngine.put()`
+3. Fan out `POST /replicate` to all followers concurrently (`asyncio.gather`)
+4. Wait for at least one follower ack — majority = 2 of 3 total
+5. Majority ack within 500ms → return 200 to client
+6. Timeout without majority → return 503 (entry remains in leader WAL; no rollback)
+
+The leader tracks per-follower LSN to detect and report replication lag.
+
+### 4.2 Follower Replication Path
+
+On receiving `POST /replicate`:
+1. Reject if `term < current_term`
+2. Reject if `lsn != current_lsn + 1` (LSN gap — follower has missed entries)
+3. Apply via `StorageEngine.put()`
+4. Return ack
+
+LSN gaps indicate the follower was down during writes. The recovery agent handles
+detection and remediation (see Section 6).
+
+### 4.3 Heartbeat Timing
+
+- Leader sends `POST /heartbeat` to all followers every **200ms**
+- Follower election timeout is randomized between **600ms–1000ms**
+- Randomization reduces split-vote probability during simultaneous timeouts
+
+---
+
+## 5. Leader Election (`src/rainman/node/election.py`)
+
+### 5.1 Node Priority
+
+Defined in `config/cluster.json`. Lower number = preferred leader.
+
+```json
+{
+  "nodes": [
+    {"node_id": "node1", "host": "node1", "port": 8000, "priority": 1},
+    {"node_id": "node2", "host": "node2", "port": 8000, "priority": 2},
+    {"node_id": "node3", "host": "node3", "port": 8000, "priority": 3}
+  ],
+  "replication": {
+    "heartbeat_interval_ms": 200,
+    "election_timeout_min_ms": 600,
+    "election_timeout_max_ms": 1000,
+    "replication_timeout_ms": 500,
+    "majority": 2
+  }
+}
+```
+
+### 5.2 Election Procedure
+
+When a follower's election timeout fires:
+1. Increment `current_term`
+2. Vote for self
+3. Send `POST /vote` to all other nodes concurrently
+4. Majority votes received within 300ms → become leader, begin heartbeats
+5. No majority → reset randomized timeout and retry
+
+### 5.3 Vote Grant Conditions
+
+Grant a vote if ALL of:
+- `candidate_term >= current_term`
+- Node has not already voted this term
+- `candidate_lsn >= current_lsn` (candidate is at least as up-to-date)
+
+---
+
+## 6. AI Agent Components
+
+Both agents use a locally-hosted Ollama model. The model endpoint and name are
+defined in `config/adversary_config.json` so that a future migration to the Claude
+API requires only a config change.
+
+### 6.1 Adversary Agent (`src/rainman/agents/adversary_agent.py`)
+
+**Role:** Uses an LLM to select and time fault injections based on observed cluster
+state. Executes faults via Docker commands.
+
+**Architecture — hybrid design:**
+- The agent polls `/health` on all nodes at regular intervals to build a structured
+  state snapshot (current leader, per-node LSN, role, term)
+- That snapshot is passed to the LLM with the fault catalog and a prompt asking it
+  to decide: which fault (if any) to inject now, against which target, and why
+- The LLM response is parsed for a structured decision; if it chooses to act, the
+  agent executes the corresponding Docker command
+- Every decision (including "do nothing") is logged with the LLM's rationale
+
+**Fault catalog:**
+
+| Fault ID | Mechanism | Observable Effect |
+|---|---|---|
+| `KILL_NODE` | `docker compose kill <service>` | Node disappears entirely |
+| `RESTART_NODE` | `docker compose restart <service>` | Node restarts; replays WAL |
+| `PAUSE_NODE` | `docker compose pause <service>` | Node stops responding; not crashed |
+| `RESUME_NODE` | `docker compose unpause <service>` | Paused node resumes |
+| `PARTITION_NODE` | `docker network disconnect rainman_net <container>` | Real network isolation |
+| `HEAL_PARTITION` | `docker network connect rainman_net <container>` | Reconnects isolated node |
+| `INJECT_DELAY` | `POST /admin/inject_delay` to target node | Artificial replication lag |
+| `CLEAR_DELAY` | `POST /admin/inject_delay` with `delay_ms: 0` | Clears injected delay |
+| `CORRUPT_WAL` | Append malformed JSON to node's WAL file on host mount | Tests WAL hardening |
+
+**Safety constraint:** The agent will not inject a new fault while the cluster has
+no live leader (undefined state). All other timing is LLM-driven.
+
+**Logging:** All decisions logged to `logs/adversary_agent.log` with ISO timestamp,
+cluster state snapshot, LLM rationale, and action taken.
+
+### 6.2 Consistency Observer (`src/rainman/agents/recovery_agent.py`)
+
+**Role:** Monitors cluster health via `/health` polling and structured log reading.
+Produces LLM-generated natural language observations about cluster state. Read-only —
+it never affects cluster state.
 
 **Behavior:**
-- Monitors node health and replication status via status endpoints or log polling
-- Selects from a defined action set: pause a node, drop traffic between two nodes, kill the leader
-- Makes decisions based on current cluster state rather than a fixed script
-- Logs each decision and its rationale for review
+- Polls `/health` on all nodes every 1 second
+- Detects structural anomalies via rule-based logic (fast, deterministic):
+  - Node unreachable
+  - Replication lag (leader LSN − follower LSN > threshold, default 10)
+  - No leader (all nodes report `role: follower`)
+  - Split brain (two nodes report `role: leader` in same term)
+- For each detected anomaly, passes the structured state to the LLM and asks it
+  to produce a human-readable observation explaining what it sees and what it implies
+- Observations are printed to stdout and written to `logs/observer.log`
 
-**Scope Constraint:** The agent's decision space is intentionally limited to a small, well-defined action set. The goal is motivated, observable decision-making — not a complex autonomous planner.
+**Example observation (LLM-generated):**
+> *"Node 3's LSN (288) is 16 entries behind the leader (304). This gap appeared
+> approximately 8 seconds ago, coinciding with the last network partition event.
+> Node 3 is reachable but not receiving replication — possible one-directional
+> partition or replication timeout. The cluster is still in majority and accepting
+> writes, but node 3 will need to resync before it can safely serve consistent reads."*
 
-### Agent 2: Consistency Observer
+**Scope constraint:** The observer reasons over structured data and produces
+language. It does not implement anomaly detection algorithms — that is the rule-based
+layer's job. It does not take any action.
 
-**Role:** Monitors replication logs and node state, flagging divergence and anomalies in real time.
+### 6.3 Agent Interaction
 
-**Behavior:**
-- Reads structured log output and node status endpoints continuously
-- Detects and reports: replication lag, node divergence, split-brain indicators, delayed acknowledgments
-- Produces human-readable observations (e.g., *"Node 3's last confirmed write is 14 seconds behind Node 1 — possible replication lag or partition"*)
-- Operates read-only; cannot affect cluster state
-
-**Scope Constraint:** The observer reasons over structured log data rather than implementing custom anomaly detection algorithms. Observations are LLM-generated interpretations of system state.
-
-### Agent Interaction
-
-The two agents are complementary but loosely coupled:
-
+The agents are complementary and loosely coupled:
 - The Fault Injector creates failure conditions
-- The Consistency Observer watches whether the system detects and surfaces those failures
-- Together they demonstrate the full failure lifecycle: *inject → observe → recover*
+- The Observer watches whether the system surfaces and recovers from those failures
+- Together they demonstrate the full failure lifecycle: **inject → observe → recover**
 
-Agents do not engage in elaborate inter-agent communication. Simplicity and correctness are prioritized over architectural complexity.
-
----
-
-## Development Plan
-
-### Recommended Build Order
-
-1. **Core KV store** — single-node implementation with `get`, `set`, `delete`
-2. **Replication layer** — leader election, follower sync, replication log
-3. **Docker networking** — three-node cluster, network partition simulation
-4. **Consistency Observer** — read-only log monitoring and anomaly flagging
-5. **Fault Injector** — adversarial agent with defined action set and state-based decisions
-6. **Integration and demonstration** — end-to-end failure/recovery scenarios with both agents active
-
-### Tooling
-
-- **Infrastructure:** Docker, Docker Compose
-- **Implementation Language:** Python
-- **AI Agents:** Phased model strategy — see below
-- **Development Assistant:** Claude Code
-
-### AI Model Strategy
-
-Agent development follows a two-phase model strategy to minimize API costs during early development while ensuring reliability during integration and demonstration.
-
-**Phase 1 — Initial Development (Ollama, local open source models)**
-
-During scaffolding and early agent development, agents will use locally-hosted open source models via Ollama. Recommended starting models:
-
-- `llama3.1:8b` or `mistral:7b` — fast, low memory footprint, suitable for structured log interpretation tasks
-- `llama3.1:70b` or `qwen2.5:32b` — preferred if hardware supports it, offering better instruction-following for the Fault Injector's decision logic
-
-The Consistency Observer is well-suited to local models throughout Phase 1, as its task (reading structured log output and producing plain-English observations) is straightforward and does not require complex reasoning. The Fault Injector may exhibit inconsistent decision quality with smaller models; this is acceptable during scaffolding but should be monitored as cluster testing begins.
-
-**Phase 2 — Integration and Demonstration (Claude API)**
-
-Once the core system reaches initial stability — defined as a functioning three-node cluster with confirmed replication — agents will be migrated to the Claude API (`claude-sonnet-4-6`) for integration testing and final demonstration. This ensures reliable instruction-following during documented failure/recovery scenarios where agent decision quality directly affects project outcomes.
-
-**Implementation note:** The model endpoint will be defined as a configuration parameter from the start, so the transition from Ollama to the Claude API requires a single config change rather than a code refactor.
-
-### Stretch Goal
-
-If the core project is completed ahead of schedule, a **leaderless replication mode** may be added. This would allow direct comparison of leader-based and leaderless behavior under identical failure scenarios — a meaningful extension that maps directly to Chapter 5 of DDIA.
+They do not communicate directly. Both read cluster state independently.
 
 ---
 
-## Evaluation Criteria
+## 7. Data Pipeline
 
-The project is considered complete when the following can be demonstrated:
+### 7.1 Dataset Files Required
 
-- Three nodes running with one elected leader
-- Writes replicated to followers and confirmed
-- Leader can be killed and a new leader elected without data loss
-- A partitioned node can rejoin and resynchronize
-- The Consistency Observer correctly identifies a divergence or lag condition
-- The Fault Injector makes at least one autonomous, state-driven failure decision
-- All events are observable via logs or a status endpoint
+Place the following Yelp JSON files in `data/raw/` (gitignored):
+- `yelp_academic_dataset_business.json`
+- `yelp_academic_dataset_review.json`
+
+Yelp Academic Dataset is available free for academic use at
+https://www.yelp.com/dataset. Requires agreement to Yelp's dataset terms.
+
+### 7.2 Sampling Script (`scripts/sample_data.py`)
+
+**Purpose:** Produces a minimal, self-consistent working dataset.
+
+**Algorithm:**
+1. Read `business.json` with reservoir sampling (single pass, no full file in memory)
+   to select N businesses (default N=1,000)
+2. Collect sampled `business_id` values into a set
+3. Read `review.json` line by line; keep reviews where `business_id` is in the set
+4. Limit to M reviews total (default M=5,000), sorted by date ascending
+5. Write:
+   - `data/sample/businesses.jsonl` — one business JSON per line
+   - `data/sample/reviews.jsonl` — one review JSON per line, chronological
+
+```bash
+python scripts/sample_data.py --businesses 1000 --reviews 5000
+```
+
+Prints a summary: businesses sampled, reviews matched, date range covered.
+
+### 7.3 Oracle Builder (`scripts/build_oracle.py`)
+
+**Purpose:** Pre-computes the expected final cluster state without touching the
+cluster. This is the correctness ground truth.
+
+**Algorithm:**
+1. Read `businesses.jsonl` — each record is an initial PUT
+2. Read `reviews.jsonl` in order — each review updates the target business:
+   - Recalculate `stars` as a running weighted average
+   - Increment `review_count`
+3. Serialize final state to `data/expected_state.json`
+
+**Output schema:**
+```json
+{
+  "generated_at": "2026-06-28T14:00:00Z",
+  "total_keys": 1000,
+  "total_writes": 6000,
+  "state": {
+    "tnhfDv5Il8EaGSXZGiuQGg": {
+      "name": "Garaje",
+      "stars": 4.31,
+      "review_count": 312
+    }
+  }
+}
+```
+
+```bash
+python scripts/build_oracle.py
+```
+
+### 7.4 Cluster Verification Script (`scripts/verify_cluster.py`)
+
+**Purpose:** Diffs live cluster state against the oracle. Run after any
+fault/recovery cycle to confirm correctness.
+
+**Algorithm:**
+1. Read `data/expected_state.json`
+2. For each key, call `GET /kv/{key}` on the leader and both followers
+3. Compare each response to the oracle value and to each other
+4. Report: missing keys, value mismatches, follower/leader divergence
+
+**Output:** Human-readable summary to stdout + machine-readable
+`logs/verification_{timestamp}.json`
+
+```bash
+python scripts/verify_cluster.py --tolerance 0.01
+```
+
+`--tolerance` applies only to float fields (star rating rounding).
+
+### 7.5 Fallback: Synthetic Data Generator
+
+If the Yelp dataset is unavailable, `scripts/generate_synthetic.py` produces a
+structurally equivalent dataset: 1,000 business-like records with nested JSON values
+averaging ~2KB, and 5,000 synthetic update events. The oracle builder works
+identically against synthetic data.
 
 ---
 
-## Dataset
+## 8. Infrastructure
 
-### Requirements
+### 8.1 Docker Compose (`docker-compose.yml`)
 
-The dataset must satisfy the following criteria:
+Three services — `node1`, `node2`, `node3` — built from a single `Dockerfile`.
+Each service:
+- Runs the FastAPI node on port 8000 internally
+- Mounts a host directory for its WAL file (so WAL persists across container restarts)
+- Is on a shared bridge network `rainman_net`
+- Receives its `NODE_ID` and priority via environment variable
 
-- **Format:** JSON objects with string keys and richly structured JSON values
-- **Size:** ~20 MB per replica (~60 MB total across three nodes)
-- **Scale:** ~10,000 key-value pairs
-- **Value structure:** Heterogeneous, nested JSON — varying field counts and value sizes — to stress replication and recovery realistically rather than with uniform synthetic records
-- **Key type:** Natural string identifiers present in the source data (no artificial key generation required)
+Host port mapping (for scripts running outside Docker):
+- `node1` → `localhost:8001`
+- `node2` → `localhost:8002`
+- `node3` → `localhost:8003`
 
-### Primary Option — Yelp Academic Dataset (Business Subset)
+### 8.2 Demo Runner (`run_demo.py`)
 
-The preferred dataset is a 10,000-record subset of the Yelp Academic Dataset's `yelp_academic_dataset_business.json` file. Each record represents a business listing and contains rich, nested JSON: name, address, city, state, coordinates, star rating, review count, hours of operation, and a nested attributes object covering parking, ambience, noise level, and similar properties. This structure produces heterogeneous value sizes well-suited to testing a distributed KV store under realistic load.
-
-**Key field:** `business_id` (a unique string per record, e.g., `"Pns2l4eNsfO8kk83dixA6A"`)
-
-**Value:** The remainder of the business record serialized as a JSON string or bytes
-
-**Access:** Available free for academic and educational use from [https://www.yelp.com/dataset](https://www.yelp.com/dataset). Requires agreement to Yelp's dataset terms before download. A 10,000-record slice of the full file (~113 MB uncompressed) is extracted at load time via a preparation script.
-
-**License:** Yelp Dataset License — academic and non-commercial use permitted.
-
-### Secondary Option — Synthetic Data Generation
-
-If the Yelp dataset is unavailable or unsuitable, a synthetic dataset will be generated using a Claude Code-assisted Python script. The generator will produce 10,000 key-value pairs matching the size and structural profile of the primary dataset:
-
-- **Keys:** UUID-based or slug-style strings (e.g., `"biz-00042"`)
-- **Values:** Nested JSON objects with a mix of string, integer, float, boolean, array, and sub-object fields
-- **Size distribution:** Randomized value sizes averaging ~2 KB, with a realistic long-tail distribution (some small records, occasional larger ones)
-- **Access patterns:** A configurable hot-key ratio (e.g., 20% of keys receiving 80% of traffic) to simulate realistic workload skew during fault injection testing
-
-The synthetic generator will be version-controlled alongside the project so that test conditions are fully reproducible.
-
-### Data Loading
-
-Regardless of which option is used, a data loader script will be provided that:
-
-1. Reads the source file or generator output
-2. Extracts or constructs the string key and JSON value for each record
-3. Bulk-loads all records into the KV store via the `set` interface before fault injection begins
-4. Verifies that all three nodes have received and confirmed the full dataset prior to any test scenario
+End-to-end demonstration script:
+1. Verify cluster is up (`docker compose ps`)
+2. Build oracle if `expected_state.json` is absent
+3. Bulk-load `businesses.jsonl` into cluster via `PUT /kv/{business_id}`
+4. Start Consistency Observer subprocess
+5. Start Adversary Agent subprocess
+6. Stream `reviews.jsonl` into cluster as sequential writes
+7. Wait for all writes to complete and cluster to converge (poll `/health` until
+   all node LSNs match)
+8. Run `verify_cluster.py` and print result
+9. Shut down both agent subprocesses
 
 ---
 
-## Connection to DDIA
+## 9. Phased Build Plan
 
-| Project Component | DDIA Chapter |
-|---|---|
-| Single-leader replication | Chapter 5 — Replication |
-| Leader election and failover | Chapter 5 — Replication |
-| Network partitions and split-brain | Chapter 8 — The Trouble with Distributed Systems |
-| Recovery and consistency after failure | Chapter 9 — Consistency and Consensus |
-| Replication logs | Chapter 5 — Replication, Chapter 11 — Stream Processing |
-| Observability and anomaly detection | Chapter 1 — Reliable, Scalable, Maintainable Applications |
+### Phase 1 — Single-Node Storage Engine (Days 1–2)
+
+**Goal:** Prove the storage engine is correct in isolation.
+
+- [ ] Implement `StorageEngine` in `src/rainman/node/storage.py`
+- [ ] Implement single-node FastAPI app with `PUT /kv/{key}`, `GET /kv/{key}`,
+      `GET /health` (no replication yet)
+- [ ] Write `tests/test_storage.py` — WAL replay, fsync, malformed line handling
+- [ ] Implement `scripts/sample_data.py` → produce working sample files
+- [ ] Implement `scripts/build_oracle.py` → produce `expected_state.json`
+- [ ] Manual test: load all businesses, verify all readable, SIGKILL container,
+      verify WAL replay restores full state
+
+**Exit criterion:** Node correctly replays WAL after a container kill and all data
+is intact.
+
+### Phase 2 — Three-Node Replication (Days 3–5)
+
+**Goal:** Static leader fans out writes; followers stay in sync.
+
+- [ ] Define `config/cluster.json` and implement config loader
+- [ ] Implement `POST /replicate` and `POST /heartbeat` endpoints
+- [ ] Implement leader fanout and majority ack in `replication.py`
+- [ ] Set up `docker-compose.yml` with three nodes on `rainman_net`
+- [ ] Implement `scripts/verify_cluster.py`
+- [ ] Write `tests/test_replication.py`
+- [ ] Manual test: kill a follower container, restart it, verify WAL replay
+      catches it up to leader; run `verify_cluster.py`
+
+**Exit criterion:** `verify_cluster.py` reports zero mismatches after bulk load
+across three nodes.
+
+### Phase 3 — Leader Election (Days 5–6)
+
+**Goal:** Cluster survives leader failure and resumes writes automatically.
+
+- [ ] Implement `election.py` (heartbeat timeout, candidate logic, vote grant)
+- [ ] Implement `POST /vote` endpoint
+- [ ] Implement `POST /admin/inject_delay` endpoint
+- [ ] Write `tests/test_election.py`
+- [ ] Manual test: kill `node1` (leader), verify `node2` wins election and writes
+      continue; restart `node1` as follower; run `verify_cluster.py`
+
+**Exit criterion:** Cluster survives leader kill and `verify_cluster.py` still
+passes after recovery.
+
+### Phase 4 — Agentic Processes (Days 6–8)
+
+**Goal:** Agents autonomously manage the fault/observe cycle.
+
+- [ ] Implement `recovery_agent.py` (rule-based detection + LLM narration via Ollama)
+- [ ] Implement `adversary_agent.py` (cluster state polling + LLM fault decision +
+      Docker execution)
+- [ ] Define `config/adversary_config.json` (Ollama endpoint, model name, fault
+      catalog, safety constraints)
+- [ ] Implement `run_demo.py`
+- [ ] End-to-end demo run: bulk load → agent activation → fault injection →
+      automatic observation → `verify_cluster.py`
+
+**Exit criterion:** Full demo run completes with `verify_cluster.py` passing after
+all fault/recovery cycles. Observer produces meaningful natural-language output.
+Adversary makes at least one autonomous, state-driven decision logged with rationale.
+
+### Phase 5 — Hardening and Documentation (Days 9–10)
+
+**Goal:** Clean, demonstrable, well-documented.
+
+- [ ] Handle WAL corruption gracefully on startup
+- [ ] Handle split-brain edge case (two leaders detected → observer flags it;
+      adversary agent can kill lower-priority one)
+- [ ] Write `README.md` with setup and demo instructions
+- [ ] Annotate key code sections with DDIA chapter references
+- [ ] Record or document a clean demo run showing full fault/recovery lifecycle
+
+**Exit criterion:** An unfamiliar reader can clone the repo, follow `README.md`,
+and observe a successful demo run.
 
 ---
 
-## Future Work
+## 10. Evaluation Criteria
 
-- **Isolation anomaly reproduction** — dirty reads, non-repeatable reads, phantom reads, write skew at varying isolation levels (deferred from current scope)
-- **Leaderless replication mode** (elevated from stretch goal if not completed)
-- **Quantitative benchmarking** — replication lag under load, time-to-election, recovery time
+The project is considered complete when all of the following can be demonstrated:
+
+- [ ] Three nodes running with one elected leader
+- [ ] Writes replicated to followers and majority-acknowledged before client confirm
+- [ ] Leader can be killed and a new leader elected without data loss
+- [ ] A killed or partitioned node can rejoin and resynchronize via WAL replay
+- [ ] The Consistency Observer correctly identifies and narrates a divergence or lag
+      condition in natural language
+- [ ] The Adversary Agent makes at least one autonomous, state-driven fault decision
+      with a logged LLM rationale
+- [ ] `verify_cluster.py` passes (zero mismatches) after a complete fault/recovery
+      cycle against the correctness oracle
 
 ---
 
-*Document version: preliminary draft.*
+## 11. Future Extensions (Out of Scope Now)
+
+- Full Raft log matching and log compaction
+- Migration from Ollama to Claude API for agent models
+- Leaderless replication mode (direct DDIA Chapter 5 comparison)
+- Isolation anomaly reproduction (dirty reads, write skew, phantom reads)
+- Quantitative benchmarking (replication lag under load, time-to-election, MTTR)
+- DELETE operation

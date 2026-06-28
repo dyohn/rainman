@@ -12,7 +12,8 @@ dev = [
     "hatchling>=1.27",
     "pipdeptree",
     "pytest>=8.4.2",
-    "ruff"
+    "ruff",
+    "fastapi"
 ]
 
 [build-system]

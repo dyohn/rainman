@@ -434,21 +434,25 @@ End-to-end demonstration script:
 
 ## 9. Phased Build Plan
 
-### Phase 1 — Single-Node Storage Engine (Days 1–2)
+### Phase 1 — Single-Node Storage Engine (Days 1–2) ✓ COMPLETE
 
 **Goal:** Prove the storage engine is correct in isolation.
 
-- [ ] Implement `StorageEngine` in `src/rainman/node/storage.py`
-- [ ] Implement single-node FastAPI app with `PUT /kv/{key}`, `GET /kv/{key}`,
+- [x] Implement `StorageEngine` in `src/rainman/node/storage.py`
+- [x] Implement single-node FastAPI app with `PUT /kv/{key}`, `GET /kv/{key}`,
       `GET /health` (no replication yet)
-- [ ] Write `tests/test_storage.py` — WAL replay, fsync, malformed line handling
-- [ ] Implement `scripts/sample_data.py` → produce working sample files
-- [ ] Implement `scripts/build_oracle.py` → produce `expected_state.json`
-- [ ] Manual test: load all businesses, verify all readable, SIGKILL container,
+- [x] Write `tests/test_storage.py` — WAL replay, fsync, malformed line handling
+- [x] Implement `scripts/sample_data.py` → produce working sample files
+- [x] Implement `scripts/build_oracle.py` → produce `expected_state.json`
+- [x] Manual test: load all businesses, verify all readable, SIGKILL container,
       verify WAL replay restores full state
 
 **Exit criterion:** Node correctly replays WAL after a container kill and all data
 is intact.
+
+> ✓ Exit criterion met 2026-06-29. WAL replay confirmed after SIGKILL.
+> Sampled data and oracle retained in `data/sample/` and
+> `data/expected_state.json` for use in Phase 2 verification.
 
 ### Phase 2 — Three-Node Replication (Days 3–5)
 

@@ -218,5 +218,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Local data files (may be very large)
-./data/raw/
-./data/sample/
+/data/raw/
+/data/sample/

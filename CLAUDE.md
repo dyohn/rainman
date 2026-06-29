@@ -4,7 +4,7 @@ This file is the authoritative reference for all development in this repository.
 Read it fully at the start of every session before writing any code.
 
 The full project specification, architecture, and phased build plan is in:
-**`project-description.md`**
+**`docs/project-description.md`**
 
 ---
 
@@ -104,7 +104,6 @@ python run_demo.py
 ```
 /
 ├── CLAUDE.md                        ← you are here
-├── project-description.md           ← full architecture and build plan
 ├── docker-compose.yml               ← three-node cluster definition
 ├── Dockerfile                       ← single image used by all nodes
 ├── pyproject.toml                   ← hatchling build config, ruff config
@@ -113,6 +112,8 @@ python run_demo.py
 ├── build.sh                         ← wheel build
 ├── clean.sh                         ← remove build artifacts
 ├── run_demo.py                      ← end-to-end demo runner
+├── docs/
+│   └── project-description.md      ← full architecture and build plan
 ├── src/
 │   └── rainman/
 │       ├── node/

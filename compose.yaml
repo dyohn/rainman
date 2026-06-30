@@ -1,0 +1,46 @@
+services:
+  node1:
+    build: .
+    container_name: node1
+    hostname: node1
+    environment:
+      - NODE_ID=node1
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data/node1:/data
+    networks:
+      - rainman_net
+    restart: on-failure
+
+  node2:
+    build: .
+    container_name: node2
+    hostname: node2
+    environment:
+      - NODE_ID=node2
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./data/node2:/data
+    networks:
+      - rainman_net
+    restart: on-failure
+
+  node3:
+    build: .
+    container_name: node3
+    hostname: node3
+    environment:
+      - NODE_ID=node3
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./data/node3:/data
+    networks:
+      - rainman_net
+    restart: on-failure
+
+networks:
+  rainman_net:
+    driver: bridge

@@ -62,9 +62,7 @@ class StorageEngine:
         self._lsn = highest_lsn
         return highest_lsn
 
-    def put(
-        self, lsn: int, term: int, key: str, value: dict
-    ) -> None:
+    def put(self, lsn: int, term: int, key: str, value: dict) -> None:
         """Append a PUT entry to the WAL, fsync, then update the index.
 
         The WAL record is persisted before the dict is updated so the

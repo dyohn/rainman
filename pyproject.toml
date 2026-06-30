@@ -3,7 +3,6 @@ name = "rainman"
 version = "1.0.0"
 description = "Inspired by the modern classic \"Designing Data-Intensive Applications\" by Martin Kleppmann, this repository implements a simple experimental database for exploration, testing, and knowledge acquisition."
 requires-python = ">=3.13"
-readme = "README.md"
 license = "MIT"
 dependencies = [
     "fastapi",

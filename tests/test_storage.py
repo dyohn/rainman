@@ -156,7 +156,7 @@ def test_replay_skips_entry_missing_fields(tmp_path):
         wal,
         [
             good_entry(1, "k1"),
-            json.dumps({"lsn": 2}),          # missing key/value
+            json.dumps({"lsn": 2}),  # missing key/value
             good_entry(3, "k3"),
         ],
     )

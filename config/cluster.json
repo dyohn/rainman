@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "node_id": "node1",
+      "host": "node1",
+      "port": 8000,
+      "host_port": 8001,
+      "priority": 1
+    },
+    {
+      "node_id": "node2",
+      "host": "node2",
+      "port": 8000,
+      "host_port": 8002,
+      "priority": 2
+    },
+    {
+      "node_id": "node3",
+      "host": "node3",
+      "port": 8000,
+      "host_port": 8003,
+      "priority": 3
+    }
+  ],
+  "replication": {
+    "heartbeat_interval_ms": 200,
+    "election_timeout_min_ms": 600,
+    "election_timeout_max_ms": 1000,
+    "replication_timeout_ms": 500,
+    "majority": 2
+  }
+}

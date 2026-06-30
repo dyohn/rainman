@@ -1,0 +1,1085 @@
+{
+  "passed": false,
+  "total_keys": 1000,
+  "checked_keys": 1000,
+  "missing_keys": 0,
+  "value_mismatches": 428,
+  "node_divergences": 0,
+  "node_health": {
+    "node1": true,
+    "node2": true,
+    "node3": true
+  },
+  "per_key_errors": [
+    {
+      "key": "HQD2fLfTDlHt8tdi8p0p3A",
+      "errors": [
+        "node1: 'stars': expected 2.6067961165048534, got 2.5",
+        "node1: 'review_count': expected 103, got 79",
+        "node2: 'stars': expected 2.6067961165048534, got 2.5",
+        "node2: 'review_count': expected 103, got 79",
+        "node3: 'stars': expected 2.6067961165048534, got 2.5",
+        "node3: 'review_count': expected 103, got 79"
+      ]
+    },
+    {
+      "key": "NDUcOSgI0rrI69ezy4PrpA",
+      "errors": [
+        "node1: 'stars': expected 2.5185185185185186, got 2.5",
+        "node1: 'review_count': expected 27, got 24",
+        "node2: 'stars': expected 2.5185185185185186, got 2.5",
+        "node2: 'review_count': expected 27, got 24",
+        "node3: 'stars': expected 2.5185185185185186, got 2.5",
+        "node3: 'review_count': expected 27, got 24"
+      ]
+    },
+    {
+      "key": "pl_Blpaznz4R0dnofV2IwA",
+      "errors": [
+        "node1: 'stars': expected 1.8571428571428572, got 2.0",
+        "node1: 'review_count': expected 7, got 6",
+        "node2: 'stars': expected 1.8571428571428572, got 2.0",
+        "node2: 'review_count': expected 7, got 6",
+        "node3: 'stars': expected 1.8571428571428572, got 2.0",
+        "node3: 'review_count': expected 7, got 6"
+      ]
+    },
+    {
+      "key": "WkC7hIrL3UGAogTqegedCQ",
+      "errors": [
+        "node1: 'stars': expected 3.5546875, got 3.5",
+        "node1: 'review_count': expected 64, got 53",
+        "node2: 'stars': expected 3.5546875, got 3.5",
+        "node2: 'review_count': expected 64, got 53",
+        "node3: 'stars': expected 3.5546875, got 3.5",
+        "node3: 'review_count': expected 64, got 53"
+      ]
+    },
+    {
+      "key": "w9grvGu-5bHNucOeReHzfA",
+      "errors": [
+        "node1: 'stars': expected 3.9703043801039346, got 4.0",
+        "node1: 'review_count': expected 1347, got 1278",
+        "node2: 'stars': expected 3.9703043801039346, got 4.0",
+        "node2: 'review_count': expected 1347, got 1278",
+        "node3: 'stars': expected 3.9703043801039346, got 4.0",
+        "node3: 'review_count': expected 1347, got 1278"
+      ]
+    },
+    {
+      "key": "bThPyIoSVfz4lNX16I9cxg",
+      "errors": [
+        "node1: 'stars': expected 3.9655172413793105, got 4.0",
+        "node1: 'review_count': expected 29, got 26",
+        "node2: 'stars': expected 3.9655172413793105, got 4.0",
+        "node2: 'review_count': expected 29, got 26",
+        "node3: 'stars': expected 3.9655172413793105, got 4.0",
+        "node3: 'review_count': expected 29, got 26"
+      ]
+    },
+    {
+      "key": "FbUkX5SQqKKebj0GgT9kDQ",
+      "errors": [
+        "node1: 'stars': expected 3.5, got 4.0",
+        "node1: 'review_count': expected 6, got 5",
+        "node2: 'stars': expected 3.5, got 4.0",
+        "node2: 'review_count': expected 6, got 5",
+        "node3: 'stars': expected 3.5, got 4.0",
+        "node3: 'review_count': expected 6, got 5"
+      ]
+    },
+    {
+      "key": "W9N0TZuxENcc8qRipVzOdw",
+      "errors": [
+        "node1: 'stars': expected 4.642857142857143, got 4.5",
+        "node1: 'review_count': expected 7, got 5",
+        "node2: 'stars': expected 4.642857142857143, got 4.5",
+        "node2: 'review_count': expected 7, got 5",
+        "node3: 'stars': expected 4.642857142857143, got 4.5",
+        "node3: 'review_count': expected 7, got 5"
+      ]
+    },
+    {
+      "key": "y0OOBEtZ64jqRTGpzNsmsA",
+      "errors": [
+        "node1: 'stars': expected 4.416666666666665, got 4.5",
+        "node1: 'review_count': expected 102, got 83",
+        "node2: 'stars': expected 4.416666666666665, got 4.5",
+        "node2: 'review_count': expected 102, got 83",
+        "node3: 'stars': expected 4.416666666666665, got 4.5",
+        "node3: 'review_count': expected 102, got 83"
+      ]
+    },
+    {
+      "key": "ZC0_EKG2MSu0qaQj4TY6sw",
+      "errors": [
+        "node1: 'stars': expected 4.368421052631579, got 4.5",
+        "node1: 'review_count': expected 19, got 10",
+        "node2: 'stars': expected 4.368421052631579, got 4.5",
+        "node2: 'review_count': expected 19, got 10",
+        "node3: 'stars': expected 4.368421052631579, got 4.5",
+        "node3: 'review_count': expected 19, got 10"
+      ]
+    },
+    {
+      "key": "rAHNtdaGf3m2VoKTx2foSQ",
+      "errors": [
+        "node1: 'stars': expected 2.8333333333333335, got 3.0",
+        "node1: 'review_count': expected 12, got 11",
+        "node2: 'stars': expected 2.8333333333333335, got 3.0",
+        "node2: 'review_count': expected 12, got 11",
+        "node3: 'stars': expected 2.8333333333333335, got 3.0",
+        "node3: 'review_count': expected 12, got 11"
+      ]
+    },
+    {
+      "key": "PAcrQQzaHyxxq6-Eb6h9xA",
+      "errors": [
+        "node1: 'stars': expected 4.083333333333333, got 4.0",
+        "node1: 'review_count': expected 12, got 10",
+        "node2: 'stars': expected 4.083333333333333, got 4.0",
+        "node2: 'review_count': expected 12, got 10",
+        "node3: 'stars': expected 4.083333333333333, got 4.0",
+        "node3: 'review_count': expected 12, got 10"
+      ]
+    },
+    {
+      "key": "Q_pHfuSpVEIVfjJLUSTu3g",
+      "errors": [
+        "node1: 'stars': expected 4.607142857142857, got 4.5",
+        "node1: 'review_count': expected 28, got 20",
+        "node2: 'stars': expected 4.607142857142857, got 4.5",
+        "node2: 'review_count': expected 28, got 20",
+        "node3: 'stars': expected 4.607142857142857, got 4.5",
+        "node3: 'review_count': expected 28, got 20"
+      ]
+    },
+    {
+      "key": "HS5CfzQ_gOJHgqwtv9rvNQ",
+      "errors": [
+        "node1: 'stars': expected 2.922737306843267, got 3.0",
+        "node1: 'review_count': expected 453, got 317",
+        "node2: 'stars': expected 2.922737306843267, got 3.0",
+        "node2: 'review_count': expected 453, got 317",
+        "node3: 'stars': expected 2.922737306843267, got 3.0",
+        "node3: 'review_count': expected 453, got 317"
+      ]
+    },
+    {
+      "key": "8-T7ADgRqb-Rur9FjwQYhA",
+      "errors": [
+        "node1: 'stars': expected 3.1666666666666665, got 3.0",
+        "node1: 'review_count': expected 12, got 11",
+        "node2: 'stars': expected 3.1666666666666665, got 3.0",
+        "node2: 'review_count': expected 12, got 11",
+        "node3: 'stars': expected 3.1666666666666665, got 3.0",
+        "node3: 'review_count': expected 12, got 11"
+      ]
+    },
+    {
+      "key": "F8S5d7C6s0frK-0ps7FJvA",
+      "errors": [
+        "node1: 'stars': expected 3.963636363636364, got 4.0",
+        "node1: 'review_count': expected 55, got 48",
+        "node2: 'stars': expected 3.963636363636364, got 4.0",
+        "node2: 'review_count': expected 55, got 48",
+        "node3: 'stars': expected 3.963636363636364, got 4.0",
+        "node3: 'review_count': expected 55, got 48"
+      ]
+    },
+    {
+      "key": "shE5OtUCphF3Qtz1fPBV5g",
+      "errors": [
+        "node1: 'stars': expected 1.8333333333333333, got 2.0",
+        "node1: 'review_count': expected 12, got 9",
+        "node2: 'stars': expected 1.8333333333333333, got 2.0",
+        "node2: 'review_count': expected 12, got 9",
+        "node3: 'stars': expected 1.8333333333333333, got 2.0",
+        "node3: 'review_count': expected 12, got 9"
+      ]
+    },
+    {
+      "key": "USIdeX0jtJf54bl8J2EKrQ",
+      "errors": [
+        "node1: 'stars': expected 3.121212121212121, got 3.0",
+        "node1: 'review_count': expected 33, got 26",
+        "node2: 'stars': expected 3.121212121212121, got 3.0",
+        "node2: 'review_count': expected 33, got 26",
+        "node3: 'stars': expected 3.121212121212121, got 3.0",
+        "node3: 'review_count': expected 33, got 26"
+      ]
+    },
+    {
+      "key": "V8SvWuTGBd-nvW3_wJdWOQ",
+      "errors": [
+        "node1: 'stars': expected 2.5779220779220786, got 2.5",
+        "node1: 'review_count': expected 77, got 67",
+        "node2: 'stars': expected 2.5779220779220786, got 2.5",
+        "node2: 'review_count': expected 77, got 67",
+        "node3: 'stars': expected 2.5779220779220786, got 2.5",
+        "node3: 'review_count': expected 77, got 67"
+      ]
+    },
+    {
+      "key": "R31Vbce8HPu0Eq6eCYtZig",
+      "errors": [
+        "node1: 'stars': expected 1.9375, got 2.0",
+        "node1: 'review_count': expected 16, got 15",
+        "node2: 'stars': expected 1.9375, got 2.0",
+        "node2: 'review_count': expected 16, got 15",
+        "node3: 'stars': expected 1.9375, got 2.0",
+        "node3: 'review_count': expected 16, got 15"
+      ]
+    },
+    {
+      "key": "DYs0PeMXhMel2Cr3xgWF3w",
+      "errors": [
+        "node1: 'stars': expected 2.44, got 2.5",
+        "node1: 'review_count': expected 25, got 24",
+        "node2: 'stars': expected 2.44, got 2.5",
+        "node2: 'review_count': expected 25, got 24",
+        "node3: 'stars': expected 2.44, got 2.5",
+        "node3: 'review_count': expected 25, got 24"
+      ]
+    },
+    {
+      "key": "V85fGg0cb0B4gWEWWgKaGQ",
+      "errors": [
+        "node1: 'stars': expected 2.5294117647058822, got 2.5",
+        "node1: 'review_count': expected 17, got 16",
+        "node2: 'stars': expected 2.5294117647058822, got 2.5",
+        "node2: 'review_count': expected 17, got 16",
+        "node3: 'stars': expected 2.5294117647058822, got 2.5",
+        "node3: 'review_count': expected 17, got 16"
+      ]
+    },
+    {
+      "key": "ZlgwjiDDgsXl_rzR3XYwhw",
+      "errors": [
+        "node1: 'stars': expected 2.857142857142857, got 2.5",
+        "node1: 'review_count': expected 7, got 6",
+        "node2: 'stars': expected 2.857142857142857, got 2.5",
+        "node2: 'review_count': expected 7, got 6",
+        "node3: 'stars': expected 2.857142857142857, got 2.5",
+        "node3: 'review_count': expected 7, got 6"
+      ]
+    },
+    {
+      "key": "kFK8VK9sGIJ9TBRcrRZtdg",
+      "errors": [
+        "node1: 'stars': expected 4.518867924528302, got 4.5",
+        "node1: 'review_count': expected 53, got 51",
+        "node2: 'stars': expected 4.518867924528302, got 4.5",
+        "node2: 'review_count': expected 53, got 51",
+        "node3: 'stars': expected 4.518867924528302, got 4.5",
+        "node3: 'review_count': expected 53, got 51"
+      ]
+    },
+    {
+      "key": "aTQWqBCmR1fNYm2JHnw-UQ",
+      "errors": [
+        "node1: 'stars': expected 1.75, got 1.5",
+        "node1: 'review_count': expected 6, got 5",
+        "node2: 'stars': expected 1.75, got 1.5",
+        "node2: 'review_count': expected 6, got 5",
+        "node3: 'stars': expected 1.75, got 1.5",
+        "node3: 'review_count': expected 6, got 5"
+      ]
+    },
+    {
+      "key": "3hVO4Qgu0HfopEsPGoeqUA",
+      "errors": [
+        "node1: 'stars': expected 3.12, got 3.0",
+        "node1: 'review_count': expected 25, got 23",
+        "node2: 'stars': expected 3.12, got 3.0",
+        "node2: 'review_count': expected 25, got 23",
+        "node3: 'stars': expected 3.12, got 3.0",
+        "node3: 'review_count': expected 25, got 23"
+      ]
+    },
+    {
+      "key": "wE_qukXM1dAAjE8exeoS4g",
+      "errors": [
+        "node1: 'stars': expected 3.5795454545454546, got 3.5",
+        "node1: 'review_count': expected 44, got 29",
+        "node2: 'stars': expected 3.5795454545454546, got 3.5",
+        "node2: 'review_count': expected 44, got 29",
+        "node3: 'stars': expected 3.5795454545454546, got 3.5",
+        "node3: 'review_count': expected 44, got 29"
+      ]
+    },
+    {
+      "key": "T_6e0SgNuKotySgVS8O1UQ",
+      "errors": [
+        "node1: 'stars': expected 4.488272921108742, got 4.5",
+        "node1: 'review_count': expected 469, got 350",
+        "node2: 'stars': expected 4.488272921108742, got 4.5",
+        "node2: 'review_count': expected 469, got 350",
+        "node3: 'stars': expected 4.488272921108742, got 4.5",
+        "node3: 'review_count': expected 469, got 350"
+      ]
+    },
+    {
+      "key": "JakK5CvB7qYMEGqbuNh5fg",
+      "errors": [
+        "node1: 'stars': expected 4.029411764705882, got 4.0",
+        "node1: 'review_count': expected 34, got 32",
+        "node2: 'stars': expected 4.029411764705882, got 4.0",
+        "node2: 'review_count': expected 34, got 32",
+        "node3: 'stars': expected 4.029411764705882, got 4.0",
+        "node3: 'review_count': expected 34, got 32"
+      ]
+    },
+    {
+      "key": "TnIcDJV1wRj3u74_QdEmbg",
+      "errors": [
+        "node1: 'stars': expected 3.5555555555555554, got 3.5",
+        "node1: 'review_count': expected 9, got 6",
+        "node2: 'stars': expected 3.5555555555555554, got 3.5",
+        "node2: 'review_count': expected 9, got 6",
+        "node3: 'stars': expected 3.5555555555555554, got 3.5",
+        "node3: 'review_count': expected 9, got 6"
+      ]
+    },
+    {
+      "key": "cZhxP40u3nhLRc3mG_aTug",
+      "errors": [
+        "node1: 'stars': expected 3.6470588235294117, got 3.5",
+        "node1: 'review_count': expected 17, got 10",
+        "node2: 'stars': expected 3.6470588235294117, got 3.5",
+        "node2: 'review_count': expected 17, got 10",
+        "node3: 'stars': expected 3.6470588235294117, got 3.5",
+        "node3: 'review_count': expected 17, got 10"
+      ]
+    },
+    {
+      "key": "teNp61jSrnmbgn7axurCkQ",
+      "errors": [
+        "node1: 'review_count': expected 15, got 13",
+        "node2: 'review_count': expected 15, got 13",
+        "node3: 'review_count': expected 15, got 13"
+      ]
+    },
+    {
+      "key": "CAQFxeImeXVWnlBL4BzZwQ",
+      "errors": [
+        "node1: 'stars': expected 3.9487179487179493, got 4.0",
+        "node1: 'review_count': expected 78, got 64",
+        "node2: 'stars': expected 3.9487179487179493, got 4.0",
+        "node2: 'review_count': expected 78, got 64",
+        "node3: 'stars': expected 3.9487179487179493, got 4.0",
+        "node3: 'review_count': expected 78, got 64"
+      ]
+    },
+    {
+      "key": "qOWUg2fAb39RB80xjmL-Gg",
+      "errors": [
+        "node1: 'stars': expected 3.5555555555555554, got 3.5",
+        "node1: 'review_count': expected 27, got 26",
+        "node2: 'stars': expected 3.5555555555555554, got 3.5",
+        "node2: 'review_count': expected 27, got 26",
+        "node3: 'stars': expected 3.5555555555555554, got 3.5",
+        "node3: 'review_count': expected 27, got 26"
+      ]
+    },
+    {
+      "key": "Ob35wGjqkn6axmZbzOaHZg",
+      "errors": [
+        "node1: 'stars': expected 1.096774193548387, got 1.0",
+        "node1: 'review_count': expected 31, got 15",
+        "node2: 'stars': expected 1.096774193548387, got 1.0",
+        "node2: 'review_count': expected 31, got 15",
+        "node3: 'stars': expected 1.096774193548387, got 1.0",
+        "node3: 'review_count': expected 31, got 15"
+      ]
+    },
+    {
+      "key": "0pNssk8vYoiR7CyCWk32Dw",
+      "errors": [
+        "node1: 'stars': expected 2.3, got 2.0",
+        "node1: 'review_count': expected 10, got 9",
+        "node2: 'stars': expected 2.3, got 2.0",
+        "node2: 'review_count': expected 10, got 9",
+        "node3: 'stars': expected 2.3, got 2.0",
+        "node3: 'review_count': expected 10, got 9"
+      ]
+    },
+    {
+      "key": "curw--Uj4rIWSRq69J_j8Q",
+      "errors": [
+        "node1: 'review_count': expected 75, got 70",
+        "node2: 'review_count': expected 75, got 70",
+        "node3: 'review_count': expected 75, got 70"
+      ]
+    },
+    {
+      "key": "vje0KIiE7vtpx7JzmBx5LQ",
+      "errors": [
+        "node1: 'stars': expected 4.074324324324325, got 4.0",
+        "node1: 'review_count': expected 148, got 129",
+        "node2: 'stars': expected 4.074324324324325, got 4.0",
+        "node2: 'review_count': expected 148, got 129",
+        "node3: 'stars': expected 4.074324324324325, got 4.0",
+        "node3: 'review_count': expected 148, got 129"
+      ]
+    },
+    {
+      "key": "a6KLVYQ41KMPmtEWak9aiQ",
+      "errors": [
+        "node1: 'review_count': expected 14, got 9",
+        "node2: 'review_count': expected 14, got 9",
+        "node3: 'review_count': expected 14, got 9"
+      ]
+    },
+    {
+      "key": "84q1MISM9lvsQo8Or4bIUA",
+      "errors": [
+        "node1: 'review_count': expected 8, got 6",
+        "node2: 'review_count': expected 8, got 6",
+        "node3: 'review_count': expected 8, got 6"
+      ]
+    },
+    {
+      "key": "bOcJY56bZ9P58o5157HRiQ",
+      "errors": [
+        "node1: 'stars': expected 1.7037037037037037, got 1.5",
+        "node1: 'review_count': expected 27, got 16",
+        "node2: 'stars': expected 1.7037037037037037, got 1.5",
+        "node2: 'review_count': expected 27, got 16",
+        "node3: 'stars': expected 1.7037037037037037, got 1.5",
+        "node3: 'review_count': expected 27, got 16"
+      ]
+    },
+    {
+      "key": "eFOexSu3Ywon4h8NtTOpKA",
+      "errors": [
+        "node1: 'stars': expected 4.065217391304348, got 4.0",
+        "node1: 'review_count': expected 46, got 41",
+        "node2: 'stars': expected 4.065217391304348, got 4.0",
+        "node2: 'review_count': expected 46, got 41",
+        "node3: 'stars': expected 4.065217391304348, got 4.0",
+        "node3: 'review_count': expected 46, got 41"
+      ]
+    },
+    {
+      "key": "Gi_4BZEYo5QZmdQ9YVRgsA",
+      "errors": [
+        "node1: 'stars': expected 4.166666666666667, got 4.0",
+        "node1: 'review_count': expected 6, got 5",
+        "node2: 'stars': expected 4.166666666666667, got 4.0",
+        "node2: 'review_count': expected 6, got 5",
+        "node3: 'stars': expected 4.166666666666667, got 4.0",
+        "node3: 'review_count': expected 6, got 5"
+      ]
+    },
+    {
+      "key": "8owsnyy3mAeVLlYQWD0WYg",
+      "errors": [
+        "node1: 'stars': expected 4.034883720930233, got 4.0",
+        "node1: 'review_count': expected 86, got 75",
+        "node2: 'stars': expected 4.034883720930233, got 4.0",
+        "node2: 'review_count': expected 86, got 75",
+        "node3: 'stars': expected 4.034883720930233, got 4.0",
+        "node3: 'review_count': expected 86, got 75"
+      ]
+    },
+    {
+      "key": "9rHUnfIKoTCf7gp7fWZbtQ",
+      "errors": [
+        "node1: 'stars': expected 3.4834710743801653, got 3.5",
+        "node1: 'review_count': expected 121, got 83",
+        "node2: 'stars': expected 3.4834710743801653, got 3.5",
+        "node2: 'review_count': expected 121, got 83",
+        "node3: 'stars': expected 3.4834710743801653, got 3.5",
+        "node3: 'review_count': expected 121, got 83"
+      ]
+    },
+    {
+      "key": "irolxiYw4pOCM9gGDOhnsw",
+      "errors": [
+        "node1: 'stars': expected 2.4871794871794872, got 2.5",
+        "node1: 'review_count': expected 39, got 36",
+        "node2: 'stars': expected 2.4871794871794872, got 2.5",
+        "node2: 'review_count': expected 39, got 36",
+        "node3: 'stars': expected 2.4871794871794872, got 2.5",
+        "node3: 'review_count': expected 39, got 36"
+      ]
+    },
+    {
+      "key": "5kXqNRNpxm4vP_awcidPDA",
+      "errors": [
+        "node1: 'stars': expected 3.482456140350877, got 3.5",
+        "node1: 'review_count': expected 171, got 149",
+        "node2: 'stars': expected 3.482456140350877, got 3.5",
+        "node2: 'review_count': expected 171, got 149",
+        "node3: 'stars': expected 3.482456140350877, got 3.5",
+        "node3: 'review_count': expected 171, got 149"
+      ]
+    },
+    {
+      "key": "Y4r8xC59-04zLfRCS_jTpw",
+      "errors": [
+        "node1: 'stars': expected 3.7857142857142856, got 4.0",
+        "node1: 'review_count': expected 14, got 13",
+        "node2: 'stars': expected 3.7857142857142856, got 4.0",
+        "node2: 'review_count': expected 14, got 13",
+        "node3: 'stars': expected 3.7857142857142856, got 4.0",
+        "node3: 'review_count': expected 14, got 13"
+      ]
+    },
+    {
+      "key": "HyC-MeHKe2erlaeC97VxbQ",
+      "errors": [
+        "node1: 'review_count': expected 14, got 12",
+        "node2: 'review_count': expected 14, got 12",
+        "node3: 'review_count': expected 14, got 12"
+      ]
+    },
+    {
+      "key": "kcSgJiaI6rvwSt9okjX8sQ",
+      "errors": [
+        "node1: 'stars': expected 3.543859649122807, got 3.5",
+        "node1: 'review_count': expected 57, got 46",
+        "node2: 'stars': expected 3.543859649122807, got 3.5",
+        "node2: 'review_count': expected 57, got 46",
+        "node3: 'stars': expected 3.543859649122807, got 3.5",
+        "node3: 'review_count': expected 57, got 46"
+      ]
+    },
+    {
+      "key": "p8mpldBjxSow2JI6PEJZyg",
+      "errors": [
+        "node1: 'review_count': expected 13, got 11",
+        "node2: 'review_count': expected 13, got 11",
+        "node3: 'review_count': expected 13, got 11"
+      ]
+    },
+    {
+      "key": "NnuxEbv5rlz0HOg0XM8EAw",
+      "errors": [
+        "node1: 'stars': expected 4.535714285714286, got 4.5",
+        "node1: 'review_count': expected 28, got 26",
+        "node2: 'stars': expected 4.535714285714286, got 4.5",
+        "node2: 'review_count': expected 28, got 26",
+        "node3: 'stars': expected 4.535714285714286, got 4.5",
+        "node3: 'review_count': expected 28, got 26"
+      ]
+    },
+    {
+      "key": "xSVMbH0BIsFCHxzR6vH15w",
+      "errors": [
+        "node1: 'stars': expected 3.782051282051282, got 3.5",
+        "node1: 'review_count': expected 39, got 27",
+        "node2: 'stars': expected 3.782051282051282, got 3.5",
+        "node2: 'review_count': expected 39, got 27",
+        "node3: 'stars': expected 3.782051282051282, got 3.5",
+        "node3: 'review_count': expected 39, got 27"
+      ]
+    },
+    {
+      "key": "1gWUE5Avh_pswlHhf813EQ",
+      "errors": [
+        "node1: 'stars': expected 3.538011695906433, got 3.5",
+        "node1: 'review_count': expected 171, got 136",
+        "node2: 'stars': expected 3.538011695906433, got 3.5",
+        "node2: 'review_count': expected 171, got 136",
+        "node3: 'stars': expected 3.538011695906433, got 3.5",
+        "node3: 'review_count': expected 171, got 136"
+      ]
+    },
+    {
+      "key": "xivK47F81CxFEaVE6rUyJA",
+      "errors": [
+        "node1: 'review_count': expected 17, got 16",
+        "node2: 'review_count': expected 17, got 16",
+        "node3: 'review_count': expected 17, got 16"
+      ]
+    },
+    {
+      "key": "DFZnh7ApQMk0nYvwTlRUxw",
+      "errors": [
+        "node1: 'stars': expected 4.62, got 4.5",
+        "node1: 'review_count': expected 25, got 19",
+        "node2: 'stars': expected 4.62, got 4.5",
+        "node2: 'review_count': expected 25, got 19",
+        "node3: 'stars': expected 4.62, got 4.5",
+        "node3: 'review_count': expected 25, got 19"
+      ]
+    },
+    {
+      "key": "JQPYseeMQkSuZLdhD_qVkw",
+      "errors": [
+        "node1: 'stars': expected 3.090909090909091, got 3.0",
+        "node1: 'review_count': expected 11, got 6",
+        "node2: 'stars': expected 3.090909090909091, got 3.0",
+        "node2: 'review_count': expected 11, got 6",
+        "node3: 'stars': expected 3.090909090909091, got 3.0",
+        "node3: 'review_count': expected 11, got 6"
+      ]
+    },
+    {
+      "key": "RhigiEs8YMbxCbxZcsbKMw",
+      "errors": [
+        "node1: 'stars': expected 3.111111111111111, got 3.0",
+        "node1: 'review_count': expected 9, got 7",
+        "node2: 'stars': expected 3.111111111111111, got 3.0",
+        "node2: 'review_count': expected 9, got 7",
+        "node3: 'stars': expected 3.111111111111111, got 3.0",
+        "node3: 'review_count': expected 9, got 7"
+      ]
+    },
+    {
+      "key": "yv6kSKxDdZTsvHL25K-U2g",
+      "errors": [
+        "node1: 'stars': expected 4.5212765957446805, got 4.5",
+        "node1: 'review_count': expected 47, got 45",
+        "node2: 'stars': expected 4.5212765957446805, got 4.5",
+        "node2: 'review_count': expected 47, got 45",
+        "node3: 'stars': expected 4.5212765957446805, got 4.5",
+        "node3: 'review_count': expected 47, got 45"
+      ]
+    },
+    {
+      "key": "BnuzcebyB1AfxH0kjNWqSg",
+      "errors": [
+        "node1: 'stars': expected 3.4482758620689653, got 3.5",
+        "node1: 'review_count': expected 29, got 24",
+        "node2: 'stars': expected 3.4482758620689653, got 3.5",
+        "node2: 'review_count': expected 29, got 24",
+        "node3: 'stars': expected 3.4482758620689653, got 3.5",
+        "node3: 'review_count': expected 29, got 24"
+      ]
+    },
+    {
+      "key": "3lbnnNHP3oNrTHaSZG2-9g",
+      "errors": [
+        "node1: 'stars': expected 2.3333333333333335, got 2.5",
+        "node1: 'review_count': expected 9, got 8",
+        "node2: 'stars': expected 2.3333333333333335, got 2.5",
+        "node2: 'review_count': expected 9, got 8",
+        "node3: 'stars': expected 2.3333333333333335, got 2.5",
+        "node3: 'review_count': expected 9, got 8"
+      ]
+    },
+    {
+      "key": "NFtgdII1WbMyl6ems1yNAg",
+      "errors": [
+        "node1: 'stars': expected 2.9644970414201195, got 3.0",
+        "node1: 'review_count': expected 169, got 116",
+        "node2: 'stars': expected 2.9644970414201195, got 3.0",
+        "node2: 'review_count': expected 169, got 116",
+        "node3: 'stars': expected 2.9644970414201195, got 3.0",
+        "node3: 'review_count': expected 169, got 116"
+      ]
+    },
+    {
+      "key": "4fraeoyJ94XIAlVnXNn-Fg",
+      "errors": [
+        "node1: 'stars': expected 2.462025316455696, got 2.5",
+        "node1: 'review_count': expected 79, got 73",
+        "node2: 'stars': expected 2.462025316455696, got 2.5",
+        "node2: 'review_count': expected 79, got 73",
+        "node3: 'stars': expected 2.462025316455696, got 2.5",
+        "node3: 'review_count': expected 79, got 73"
+      ]
+    },
+    {
+      "key": "1gcgTI28LNjrFmMuxSkHpA",
+      "errors": [
+        "node1: 'stars': expected 4.1, got 4.0",
+        "node1: 'review_count': expected 10, got 9",
+        "node2: 'stars': expected 4.1, got 4.0",
+        "node2: 'review_count': expected 10, got 9",
+        "node3: 'stars': expected 4.1, got 4.0",
+        "node3: 'review_count': expected 10, got 9"
+      ]
+    },
+    {
+      "key": "8sVawT0QHxFC3s3zCQYL7g",
+      "errors": [
+        "node1: 'stars': expected 2.396551724137931, got 2.5",
+        "node1: 'review_count': expected 29, got 23",
+        "node2: 'stars': expected 2.396551724137931, got 2.5",
+        "node2: 'review_count': expected 29, got 23",
+        "node3: 'stars': expected 2.396551724137931, got 2.5",
+        "node3: 'review_count': expected 29, got 23"
+      ]
+    },
+    {
+      "key": "idWOWHJ7zInwE8SPBcFHLg",
+      "errors": [
+        "node1: 'stars': expected 4.53921568627451, got 4.5",
+        "node1: 'review_count': expected 51, got 41",
+        "node2: 'stars': expected 4.53921568627451, got 4.5",
+        "node2: 'review_count': expected 51, got 41",
+        "node3: 'stars': expected 4.53921568627451, got 4.5",
+        "node3: 'review_count': expected 51, got 41"
+      ]
+    },
+    {
+      "key": "nK8vjfNFPoAuwdw9zPdMyw",
+      "errors": [
+        "node1: 'stars': expected 2.3076923076923075, got 2.5",
+        "node1: 'review_count': expected 13, got 10",
+        "node2: 'stars': expected 2.3076923076923075, got 2.5",
+        "node2: 'review_count': expected 13, got 10",
+        "node3: 'stars': expected 2.3076923076923075, got 2.5",
+        "node3: 'review_count': expected 13, got 10"
+      ]
+    },
+    {
+      "key": "L2ppV5eK9krUkcQivDqr7Q",
+      "errors": [
+        "node1: 'stars': expected 4.487804878048781, got 4.5",
+        "node1: 'review_count': expected 82, got 70",
+        "node2: 'stars': expected 4.487804878048781, got 4.5",
+        "node2: 'review_count': expected 82, got 70",
+        "node3: 'stars': expected 4.487804878048781, got 4.5",
+        "node3: 'review_count': expected 82, got 70"
+      ]
+    },
+    {
+      "key": "V9SIlYLtLBBQcRhDXS2qlA",
+      "errors": [
+        "node1: 'stars': expected 3.4863013698630136, got 3.5",
+        "node1: 'review_count': expected 73, got 69",
+        "node2: 'stars': expected 3.4863013698630136, got 3.5",
+        "node2: 'review_count': expected 73, got 69",
+        "node3: 'stars': expected 3.4863013698630136, got 3.5",
+        "node3: 'review_count': expected 73, got 69"
+      ]
+    },
+    {
+      "key": "WQewjoi0yQj3kUwlFJHYZw",
+      "errors": [
+        "node1: 'stars': expected 2.578125, got 2.5",
+        "node1: 'review_count': expected 32, got 31",
+        "node2: 'stars': expected 2.578125, got 2.5",
+        "node2: 'review_count': expected 32, got 31",
+        "node3: 'stars': expected 2.578125, got 2.5",
+        "node3: 'review_count': expected 32, got 31"
+      ]
+    },
+    {
+      "key": "X8-9_vPEd4f5Yw-Q6AN7xQ",
+      "errors": [
+        "node1: 'stars': expected 4.5675675675675675, got 4.5",
+        "node1: 'review_count': expected 37, got 32",
+        "node2: 'stars': expected 4.5675675675675675, got 4.5",
+        "node2: 'review_count': expected 37, got 32",
+        "node3: 'stars': expected 4.5675675675675675, got 4.5",
+        "node3: 'review_count': expected 37, got 32"
+      ]
+    },
+    {
+      "key": "fshdUiudX3YrEUSwZmN3jA",
+      "errors": [
+        "node1: 'stars': expected 2.727272727272727, got 2.5",
+        "node1: 'review_count': expected 11, got 10",
+        "node2: 'stars': expected 2.727272727272727, got 2.5",
+        "node2: 'review_count': expected 11, got 10",
+        "node3: 'stars': expected 2.727272727272727, got 2.5",
+        "node3: 'review_count': expected 11, got 10"
+      ]
+    },
+    {
+      "key": "BBXw5XPf63YX0fm2dYQzLw",
+      "errors": [
+        "node1: 'stars': expected 4.012345679012346, got 4.0",
+        "node1: 'review_count': expected 81, got 45",
+        "node2: 'stars': expected 4.012345679012346, got 4.0",
+        "node2: 'review_count': expected 81, got 45",
+        "node3: 'stars': expected 4.012345679012346, got 4.0",
+        "node3: 'review_count': expected 81, got 45"
+      ]
+    },
+    {
+      "key": "vwRww8rHILJcbmMZItYbSw",
+      "errors": [
+        "node1: 'stars': expected 3.55, got 3.5",
+        "node1: 'review_count': expected 10, got 9",
+        "node2: 'stars': expected 3.55, got 3.5",
+        "node2: 'review_count': expected 10, got 9",
+        "node3: 'stars': expected 3.55, got 3.5",
+        "node3: 'review_count': expected 10, got 9"
+      ]
+    },
+    {
+      "key": "9qOhDtUP5OMk2w-CHQxcTw",
+      "errors": [
+        "node1: 'stars': expected 4.527777777777779, got 4.5",
+        "node1: 'review_count': expected 342, got 303",
+        "node2: 'stars': expected 4.527777777777779, got 4.5",
+        "node2: 'review_count': expected 342, got 303",
+        "node3: 'stars': expected 4.527777777777779, got 4.5",
+        "node3: 'review_count': expected 342, got 303"
+      ]
+    },
+    {
+      "key": "00GUtYi5sfOjPORRYuytbA",
+      "errors": [
+        "node1: 'stars': expected 4.166666666666667, got 4.0",
+        "node1: 'review_count': expected 6, got 5",
+        "node2: 'stars': expected 4.166666666666667, got 4.0",
+        "node2: 'review_count': expected 6, got 5",
+        "node3: 'stars': expected 4.166666666666667, got 4.0",
+        "node3: 'review_count': expected 6, got 5"
+      ]
+    },
+    {
+      "key": "xRKDj3loYc0EE6JMygO58Q",
+      "errors": [
+        "node1: 'review_count': expected 7, got 5",
+        "node2: 'review_count': expected 7, got 5",
+        "node3: 'review_count': expected 7, got 5"
+      ]
+    },
+    {
+      "key": "pCrNsRdZGzUzz8Ye5w-lpQ",
+      "errors": [
+        "node1: 'stars': expected 2.096774193548387, got 2.0",
+        "node1: 'review_count': expected 31, got 28",
+        "node2: 'stars': expected 2.096774193548387, got 2.0",
+        "node2: 'review_count': expected 31, got 28",
+        "node3: 'stars': expected 2.096774193548387, got 2.0",
+        "node3: 'review_count': expected 31, got 28"
+      ]
+    },
+    {
+      "key": "66wZbjVNPH5I3hB3wxoUCA",
+      "errors": [
+        "node1: 'review_count': expected 39, got 33",
+        "node2: 'review_count': expected 39, got 33",
+        "node3: 'review_count': expected 39, got 33"
+      ]
+    },
+    {
+      "key": "fio_STCfed6Un1j2DGQpfw",
+      "errors": [
+        "node1: 'stars': expected 2.496794871794872, got 2.5",
+        "node1: 'review_count': expected 156, got 153",
+        "node2: 'stars': expected 2.496794871794872, got 2.5",
+        "node2: 'review_count': expected 156, got 153",
+        "node3: 'stars': expected 2.496794871794872, got 2.5",
+        "node3: 'review_count': expected 156, got 153"
+      ]
+    },
+    {
+      "key": "yNv_RImPRQNf9qC8thA_0Q",
+      "errors": [
+        "node1: 'stars': expected 1.7777777777777777, got 1.5",
+        "node1: 'review_count': expected 9, got 8",
+        "node2: 'stars': expected 1.7777777777777777, got 1.5",
+        "node2: 'review_count': expected 9, got 8",
+        "node3: 'stars': expected 1.7777777777777777, got 1.5",
+        "node3: 'review_count': expected 9, got 8"
+      ]
+    },
+    {
+      "key": "B42l8v2qf9IBqr8PxA4I1A",
+      "errors": [
+        "node1: 'stars': expected 1.5172413793103448, got 1.5",
+        "node1: 'review_count': expected 29, got 26",
+        "node2: 'stars': expected 1.5172413793103448, got 1.5",
+        "node2: 'review_count': expected 29, got 26",
+        "node3: 'stars': expected 1.5172413793103448, got 1.5",
+        "node3: 'review_count': expected 29, got 26"
+      ]
+    },
+    {
+      "key": "VhUpDnabUXlXXdobcuyctw",
+      "errors": [
+        "node1: 'stars': expected 3.0454545454545454, got 3.0",
+        "node1: 'review_count': expected 44, got 41",
+        "node2: 'stars': expected 3.0454545454545454, got 3.0",
+        "node2: 'review_count': expected 44, got 41",
+        "node3: 'stars': expected 3.0454545454545454, got 3.0",
+        "node3: 'review_count': expected 44, got 41"
+      ]
+    },
+    {
+      "key": "_CsvXuoO2nPo2WTQ6fu7xA",
+      "errors": [
+        "node1: 'stars': expected 2.2222222222222223, got 2.0",
+        "node1: 'review_count': expected 9, got 8",
+        "node2: 'stars': expected 2.2222222222222223, got 2.0",
+        "node2: 'review_count': expected 9, got 8",
+        "node3: 'stars': expected 2.2222222222222223, got 2.0",
+        "node3: 'review_count': expected 9, got 8"
+      ]
+    },
+    {
+      "key": "QkHUW81Cwu9WPemHW7oL-A",
+      "errors": [
+        "node1: 'stars': expected 4.03125, got 4.0",
+        "node1: 'review_count': expected 32, got 31",
+        "node2: 'stars': expected 4.03125, got 4.0",
+        "node2: 'review_count': expected 32, got 31",
+        "node3: 'stars': expected 4.03125, got 4.0",
+        "node3: 'review_count': expected 32, got 31"
+      ]
+    },
+    {
+      "key": "XDvsDfLRddgpayKv7Mcn-g",
+      "errors": [
+        "node1: 'stars': expected 2.4, got 2.5",
+        "node1: 'review_count': expected 10, got 8",
+        "node2: 'stars': expected 2.4, got 2.5",
+        "node2: 'review_count': expected 10, got 8",
+        "node3: 'stars': expected 2.4, got 2.5",
+        "node3: 'review_count': expected 10, got 8"
+      ]
+    },
+    {
+      "key": "bTBRqXfF-A1R-ShOsr7kbg",
+      "errors": [
+        "node1: 'stars': expected 3.981132075471698, got 4.0",
+        "node1: 'review_count': expected 53, got 30",
+        "node2: 'stars': expected 3.981132075471698, got 4.0",
+        "node2: 'review_count': expected 53, got 30",
+        "node3: 'stars': expected 3.981132075471698, got 4.0",
+        "node3: 'review_count': expected 53, got 30"
+      ]
+    },
+    {
+      "key": "wjOc0nLAMz2FxP5MpOkv1Q",
+      "errors": [
+        "node1: 'stars': expected 2.8152173913043477, got 3.0",
+        "node1: 'review_count': expected 92, got 81",
+        "node2: 'stars': expected 2.8152173913043477, got 3.0",
+        "node2: 'review_count': expected 92, got 81",
+        "node3: 'stars': expected 2.8152173913043477, got 3.0",
+        "node3: 'review_count': expected 92, got 81"
+      ]
+    },
+    {
+      "key": "JG98smIWipytmzzvo4lBTw",
+      "errors": [
+        "node1: 'stars': expected 2.473684210526316, got 2.5",
+        "node1: 'review_count': expected 19, got 18",
+        "node2: 'stars': expected 2.473684210526316, got 2.5",
+        "node2: 'review_count': expected 19, got 18",
+        "node3: 'stars': expected 2.473684210526316, got 2.5",
+        "node3: 'review_count': expected 19, got 18"
+      ]
+    },
+    {
+      "key": "5sGryBnSx35jx7rBbr_DnQ",
+      "errors": [
+        "node1: 'stars': expected 3.622950819672131, got 3.5",
+        "node1: 'review_count': expected 61, got 32",
+        "node2: 'stars': expected 3.622950819672131, got 3.5",
+        "node2: 'review_count': expected 61, got 32",
+        "node3: 'stars': expected 3.622950819672131, got 3.5",
+        "node3: 'review_count': expected 61, got 32"
+      ]
+    },
+    {
+      "key": "xF9r1XbMvEOsJeHlmFhIvw",
+      "errors": [
+        "node1: 'review_count': expected 19, got 13",
+        "node2: 'review_count': expected 19, got 13",
+        "node3: 'review_count': expected 19, got 13"
+      ]
+    },
+    {
+      "key": "WIHfmiY-K9F5SFoTzm6Org",
+      "errors": [
+        "node1: 'stars': expected 2.5416666666666665, got 2.5",
+        "node1: 'review_count': expected 24, got 12",
+        "node2: 'stars': expected 2.5416666666666665, got 2.5",
+        "node2: 'review_count': expected 24, got 12",
+        "node3: 'stars': expected 2.5416666666666665, got 2.5",
+        "node3: 'review_count': expected 24, got 12"
+      ]
+    },
+    {
+      "key": "ZPr1YaGXafGztJbU6cauiA",
+      "errors": [
+        "node1: 'stars': expected 3.9753086419753085, got 4.0",
+        "node1: 'review_count': expected 81, got 74",
+        "node2: 'stars': expected 3.9753086419753085, got 4.0",
+        "node2: 'review_count': expected 81, got 74",
+        "node3: 'stars': expected 3.9753086419753085, got 4.0",
+        "node3: 'review_count': expected 81, got 74"
+      ]
+    },
+    {
+      "key": "oO2ZNCM4nJXV62TJDGHPww",
+      "errors": [
+        "node1: 'stars': expected 4.095238095238095, got 4.0",
+        "node1: 'review_count': expected 63, got 45",
+        "node2: 'stars': expected 4.095238095238095, got 4.0",
+        "node2: 'review_count': expected 63, got 45",
+        "node3: 'stars': expected 4.095238095238095, got 4.0",
+        "node3: 'review_count': expected 63, got 45"
+      ]
+    },
+    {
+      "key": "BDwvx2FABcCYjxqjO63OEg",
+      "errors": [
+        "node1: 'stars': expected 4.833333333333333, got 5.0",
+        "node1: 'review_count': expected 12, got 9",
+        "node2: 'stars': expected 4.833333333333333, got 5.0",
+        "node2: 'review_count': expected 12, got 9",
+        "node3: 'stars': expected 4.833333333333333, got 5.0",
+        "node3: 'review_count': expected 12, got 9"
+      ]
+    },
+    {
+      "key": "Raqeg8TYCCAqvlng6IM46g",
+      "errors": [
+        "node1: 'stars': expected 3.392857142857143, got 3.5",
+        "node1: 'review_count': expected 14, got 11",
+        "node2: 'stars': expected 3.392857142857143, got 3.5",
+        "node2: 'review_count': expected 14, got 11",
+        "node3: 'stars': expected 3.392857142857143, got 3.5",
+        "node3: 'review_count': expected 14, got 11"
+      ]
+    },
+    {
+      "key": "1eA4MNI8k_I7fGSl56nveQ",
+      "errors": [
+        "node1: 'stars': expected 4.4113924050632916, got 4.5",
+        "node1: 'review_count': expected 79, got 67",
+        "node2: 'stars': expected 4.4113924050632916, got 4.5",
+        "node2: 'review_count': expected 79, got 67",
+        "node3: 'stars': expected 4.4113924050632916, got 4.5",
+        "node3: 'review_count': expected 79, got 67"
+      ]
+    },
+    {
+      "key": "95v5E0EBb81f4j_eBYZijw",
+      "errors": [
+        "node1: 'stars': expected 3.7142857142857144, got 3.5",
+        "node1: 'review_count': expected 7, got 6",
+        "node2: 'stars': expected 3.7142857142857144, got 3.5",
+        "node2: 'review_count': expected 7, got 6",
+        "node3: 'stars': expected 3.7142857142857144, got 3.5",
+        "node3: 'review_count': expected 7, got 6"
+      ]
+    },
+    {
+      "key": "XeXaUOCR7VYv2y2QVhUQ4w",
+      "errors": [
+        "node1: 'stars': expected 4.538461538461538, got 4.5",
+        "node1: 'review_count': expected 13, got 12",
+        "node2: 'stars': expected 4.538461538461538, got 4.5",
+        "node2: 'review_count': expected 13, got 12",
+        "node3: 'stars': expected 4.538461538461538, got 4.5",
+        "node3: 'review_count': expected 13, got 12"
+      ]
+    },
+    {
+      "key": "7UhDaJZATGgsjpbmZYdW6A",
+      "errors": [
+        "node1: 'stars': expected 3.4305555555555554, got 3.5",
+        "node1: 'review_count': expected 36, got 35",
+        "node2: 'stars': expected 3.4305555555555554, got 3.5",
+        "node2: 'review_count': expected 36, got 35",
+        "node3: 'stars': expected 3.4305555555555554, got 3.5",
+        "node3: 'review_count': expected 36, got 35"
+      ]
+    }
+  ]
+}

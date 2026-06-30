@@ -32,8 +32,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--url",
-        default="http://localhost:8000",
-        help="Node base URL (default: http://localhost:8000)",
+        default="http://localhost:8001",
+        help="Node base URL (default: http://localhost:8001)",
     )
     args = parser.parse_args()
 

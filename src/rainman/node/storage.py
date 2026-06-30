@@ -29,6 +29,7 @@ class StorageEngine:
         self._wal_path = wal_path
         self._index: dict[str, dict] = {}
         self._lsn: int = 0
+        self._highest_term: int = 0
         self._lock = threading.Lock()
         self._wal = open(wal_path, "a")  # creates file if absent
 
@@ -49,9 +50,12 @@ class StorageEngine:
                 try:
                     entry = json.loads(raw)
                     lsn = int(entry["lsn"])
+                    term = int(entry.get("term", 0))
                     self._index[entry["key"]] = entry["value"]
                     if lsn > highest_lsn:
                         highest_lsn = lsn
+                    if term > self._highest_term:
+                        self._highest_term = term
                 except (KeyError, ValueError, json.JSONDecodeError) as exc:
                     logger.warning(
                         "WAL line %d skipped (malformed): %s — %r",
@@ -97,6 +101,17 @@ class StorageEngine:
         Never raises.
         """
         return self._lsn
+
+    def highest_term(self) -> int:
+        """Return the highest term seen across all replayed WAL entries.
+
+        Returns 0 if the WAL is empty or contains no term fields.
+        Used on startup to restore term continuity after a crash so the
+        node never reuses a term it has already participated in.
+        DDIA §5: currentTerm is persistent state in leader election.
+        Never raises.
+        """
+        return self._highest_term
 
     def snapshot(self) -> dict:
         """Return a shallow copy of the entire in-memory index.

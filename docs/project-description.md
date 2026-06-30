@@ -510,19 +510,199 @@ across three nodes.
 > (kill node3 → restart → WAL replay → verify_cluster.py) passed with zero
 > mismatches across all 1000 oracle keys.
 
-### Phase 3 — Leader Election (Days 5–6)
+### Phase 3 — Leader Election (Days 5–6) ✓ COMPLETE
 
 **Goal:** Cluster survives leader failure and resumes writes automatically.
 
-- [ ] Implement `election.py` (heartbeat timeout, candidate logic, vote grant)
-- [ ] Implement `POST /vote` endpoint
-- [ ] Implement `POST /admin/inject_delay` endpoint
-- [ ] Write `tests/test_election.py`
+- [x] Implement `election.py` (heartbeat timeout, candidate logic, vote grant)
+- [x] Implement `POST /vote` endpoint
+- [x] Implement `POST /admin/inject_delay` endpoint
+- [x] Write `tests/test_election.py`
 - [ ] Manual test: kill `node1` (leader), verify `node2` wins election and writes
       continue; restart `node1` as follower; run `verify_cluster.py`
 
+  **Steps:**
+  1. Start (or restart) the cluster with the Phase 3 code:
+
+     ```bash
+     docker compose up --build -d
+     ```
+
+     The `-d` flag backgrounds the cluster so your terminal stays free.
+     All three nodes start as followers and begin their election timeouts.
+
+  2. Wait for the initial election to complete:
+
+     ```bash
+     sleep 2
+     ```
+
+     Each follower waits 600–1000 ms before calling an election.  One
+     node times out first, increments the term, and solicits votes from
+     the other two.  The vote round completes within 300 ms.  Total time
+     to first leader is normally under 2 seconds.
+
+  3. Confirm a leader has been elected:
+
+     ```bash
+     curl -s http://localhost:8001/health | python3 -m json.tool
+     curl -s http://localhost:8002/health | python3 -m json.tool
+     curl -s http://localhost:8003/health | python3 -m json.tool
+     ```
+
+     One node will show `"role": "leader"` and `"term": 1` (or higher).
+     The other two will show `"role": "follower"` with the same
+     `"leader_id"` and `"term"`.  If you do not see a leader yet, wait
+     one more second and re-run — a split vote (both nodes timeout
+     simultaneously) can require a second election.
+
+     Note the leader's `node_id`; you will need it for steps 6 and 11.
+     The steps below assume **node1** won; substitute `node2` or `node3`
+     and the corresponding host port (8002 or 8003) if another node won.
+
+  4. Load the Yelp dataset (**skip if you completed Phase 2 and the WAL
+     files in `data/node1/`, `data/node2/`, `data/node3/` are still
+     present from that session** — WAL replay on startup restores the
+     full in-memory state automatically):
+
+     ```bash
+     python scripts/load_businesses.py
+     python scripts/load_reviews.py
+     ```
+
+     Run both scripts with all three nodes running so every write is
+     replicated before the kill.  After this, all three WALs contain the
+     full oracle state.
+
+  5. Write a pre-kill marker key to the current leader (replace
+     `$LEADER_PORT` with 8001/8002/8003 to match whoever won step 3):
+
+     ```bash
+     LEADER_PORT=8001
+
+     curl -X PUT "http://localhost:${LEADER_PORT}/kv/pre_kill_key" \
+       -H "Content-Type: application/json" \
+       -d '{"value": {"note": "written_before_kill"}}'
+     ```
+
+     A 200 response confirms the leader is accepting writes.  This key is
+     not in the oracle so `verify_cluster.py` will not check it; it simply
+     lets you confirm the pre-kill state.
+
+  6. Stop the leader with `docker compose stop` rather than `kill`.
+     The `compose.yaml` `restart: on-failure` policy only triggers on a
+     non-zero exit; `stop` sends SIGTERM and the node exits cleanly with
+     code 0, so it stays down until you explicitly start it again:
+
+     ```bash
+     docker compose stop node1   # replace with the actual leader service name
+     ```
+
+     The two surviving nodes immediately stop receiving heartbeats and
+     begin their election countdowns independently.
+
+  7. Wait for re-election:
+
+     ```bash
+     sleep 2
+     ```
+
+  8. Confirm the new leader on the two surviving nodes:
+
+     ```bash
+     curl -s http://localhost:8002/health | python3 -m json.tool
+     curl -s http://localhost:8003/health | python3 -m json.tool
+     ```
+
+     One of the two will now show `"role": "leader"` with an incremented
+     `"term"` (should be 2 if the initial term was 1).  The `"leader_id"`
+     on both nodes must agree.  Both nodes will also have forgotten
+     node1 as the leader — their `"leader_id"` now names the new winner.
+
+  9. Write a key to the new leader while the old leader is still down.
+     Replace `$NEW_PORT` with the host port of the node that won step 8:
+
+     ```bash
+     NEW_PORT=8002   # or 8003
+
+     curl -X PUT "http://localhost:${NEW_PORT}/kv/post_election_key" \
+       -H "Content-Type: application/json" \
+       -d '{"value": {"note": "written_after_election"}}'
+     ```
+
+     A 200 response confirms the new leader is writing and replicating
+     normally.  A 503 (majority ack failed) means quorum cannot be reached
+     because the third node is still down — verify that exactly two nodes
+     are running with `docker compose ps`.
+
+  10. Run `verify_cluster.py` while node1 is still down:
+
+      ```bash
+      python scripts/verify_cluster.py
+      ```
+
+      The script will time out when it tries to contact node1 — that is
+      expected.  The important result is that **the two live nodes agree
+      on every oracle key with zero mismatches**.  This confirms the
+      election did not corrupt replicated state.
+
+  11. Restart the stopped node:
+
+      ```bash
+      docker compose start node1
+      ```
+
+      node1 opens its WAL, replays all entries it had before it was
+      stopped, and rebuilds its in-memory dict.  It then starts its
+      election timeout.  Because the two surviving nodes are already
+      sending heartbeats, node1 receives one within 200 ms, learns who
+      the current leader is, and resets its countdown without calling a
+      competing election.
+
+  12. Wait for node1 to finish startup:
+
+      ```bash
+      sleep 3
+      ```
+
+  13. Confirm node1 is now a follower with the correct term:
+
+      ```bash
+      curl -s http://localhost:8001/health | python3 -m json.tool
+      ```
+
+      Expected: `"role": "follower"`, `"leader_id"` pointing to the
+      winner from step 8, and `"term"` matching the cluster term.  The
+      `"lsn"` on node1 will be slightly lower than the leader's — it
+      missed `post_election_key` while it was down.  This is expected;
+      Phase 3 does not implement pull-from-leader catch-up (that is a
+      Phase 4+ concern).
+
+  14. Run `verify_cluster.py` with all three nodes live:
+
+      ```bash
+      python scripts/verify_cluster.py
+      ```
+
+      Must report zero mismatches.  All oracle keys were loaded before
+      the kill so every one of them is in node1's WAL; `post_election_key`
+      is not in the oracle so its absence on node1 does not trigger a
+      mismatch.
+
 **Exit criterion:** Cluster survives leader kill and `verify_cluster.py` still
 passes after recovery.
+
+> ✓ Complete 2026-06-30. 70 tests passing, lint clean.
+> `ElectionManager` drives randomised-timeout election: followers time out
+> after 600–1000 ms without a heartbeat, increment term, self-vote, and
+> send concurrent POST /vote to peers; a majority wins the election and
+> calls `_on_became_leader` which starts the heartbeat loop and sets
+> `_role = "leader"`.  Vote-grant enforces all three DDIA §5.3 conditions
+> (term, voted_for, log completeness).  Leaders step down on any
+> higher-term message (heartbeat, vote, replicate).  StorageEngine now
+> tracks `highest_term` during WAL replay so term monotonicity survives
+> crashes.  POST /admin/inject_delay enables adversary-agent fault
+> injection.  Manual cluster test pending.
 
 ### Phase 4 — Agentic Processes (Days 6–8)
 

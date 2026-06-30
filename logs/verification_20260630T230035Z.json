@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "total_keys": 1000,
+  "checked_keys": 1000,
+  "missing_keys": 0,
+  "value_mismatches": 0,
+  "node_divergences": 0,
+  "node_health": {
+    "node1": false,
+    "node2": true,
+    "node3": true
+  },
+  "per_key_errors": []
+}

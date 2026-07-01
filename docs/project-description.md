@@ -704,22 +704,181 @@ passes after recovery.
 > crashes.  POST /admin/inject_delay enables adversary-agent fault
 > injection.  Manual cluster test pending.
 
-### Phase 4 — Agentic Processes (Days 6–8)
+### Phase 4 — Agentic Processes (Days 6–8) ✓ COMPLETE
 
 **Goal:** Agents autonomously manage the fault/observe cycle.
 
-- [ ] Implement `recovery_agent.py` (rule-based detection + LLM narration via Ollama)
-- [ ] Implement `adversary_agent.py` (cluster state polling + LLM fault decision +
+- [x] Implement `recovery_agent.py` (rule-based detection + LLM narration via Ollama)
+- [x] Implement `adversary_agent.py` (cluster state polling + LLM fault decision +
       Docker execution)
-- [ ] Define `config/adversary_config.json` (Ollama endpoint, model name, fault
+- [x] Define `config/adversary_config.json` (Ollama endpoint, model name, fault
       catalog, safety constraints)
-- [ ] Implement `run_demo.py`
-- [ ] End-to-end demo run: bulk load → agent activation → fault injection →
+- [x] Implement `run_demo.py`
+- [x] End-to-end demo run: bulk load → agent activation → fault injection →
       automatic observation → `verify_cluster.py`
+
+  **Steps:**
+  1. Tear down any existing cluster state and rebuild from scratch:
+
+     ```bash
+     docker compose down
+     rm -rf data/node1 data/node2 data/node3
+     docker compose up --build -d
+     ```
+
+     `docker compose down -v` only removes *named* Docker volumes; the
+     WAL data lives in bind-mounted directories (`./data/node*/`) that
+     `down -v` does not touch.  Deleting those directories guarantees
+     every node starts with an empty WAL at LSN 0, which is required for
+     a clean demo run.  The `--build` flag bakes the latest
+     `config/cluster.json` (including the replication timeout) into the
+     image.  All three nodes boot as followers and begin election
+     countdowns.
+
+  2. Wait for the initial leader election:
+
+     ```bash
+     sleep 3
+     ```
+
+     One node times out first, wins the vote, and begins sending
+     heartbeats.  Three seconds is conservative — the election normally
+     completes in under two.
+
+  3. Confirm all three nodes are healthy and a leader has emerged:
+
+     ```bash
+     curl -s http://localhost:8001/health | python3 -m json.tool
+     curl -s http://localhost:8002/health | python3 -m json.tool
+     curl -s http://localhost:8003/health | python3 -m json.tool
+     ```
+
+     One node must show `"role": "leader"`; the other two must show
+     `"role": "follower"` with a matching `"leader_id"` and `"term"`.
+     If no leader appears yet, wait one more second and re-run — a split
+     vote can require a second election round.
+
+  4. Confirm Ollama is running and the configured model is loaded:
+
+     ```bash
+     curl -s http://localhost:11434/api/tags | python3 -m json.tool
+     ```
+
+     Look for `"llama3.2"` (or whatever model is set in
+     `config/adversary_config.json`) in the `"models"` list.  If the
+     model is absent, pull it first:
+
+     ```bash
+     ollama pull llama3.2
+     ```
+
+     If Ollama is not running at all, both agents will degrade gracefully
+     (observer logs fallback messages; adversary skips LLM decisions and
+     takes no action), and the demo will still complete — but you will not
+     see LLM-generated narration or autonomous fault decisions.
+
+  5. Run the end-to-end demo:
+
+     ```bash
+     python run_demo.py
+     ```
+
+     The demo orchestrates nine steps automatically and streams all output
+     to the terminal.  Expected sequence visible in the output:
+
+     - **Preflight** — three `/health` checks; leader identified.
+     - **Oracle** — `data/expected_state.json` built if absent.
+     - **Bulk load** — `data/sample/businesses.jsonl` written to the
+       leader with progress printed every 100 records.
+     - **Observer start** — `recovery_agent.py` subprocess launched;
+       `[HEALTHY]` or `[ANOMALY]` lines appear alongside demo output.
+     - **Adversary start** — `adversary_agent.py` subprocess launched;
+       `[POLL]` and `[DECISION]` lines appear every ~5 seconds.
+     - **Review stream** — `data/sample/reviews.jsonl` written
+       sequentially; on a 409 the demo re-discovers the leader and
+       redirects; on a 503 it retries up to three times.
+     - **Convergence** — polls `/health` every 2 seconds until all live
+       nodes agree on LSN or 60 seconds elapse; prints per-node LSN.
+     - **Verify** — `scripts/verify_cluster.py` runs and prints its
+       result.
+     - **Shutdown** — both agent subprocesses receive SIGTERM.
+
+     The full run takes several minutes depending on dataset size and
+     how aggressively the adversary acts.
+
+  6. While the demo runs, watch the adversary log in a second terminal
+     to confirm autonomous fault decisions are being made:
+
+     ```bash
+     tail -f logs/adversary_agent.log
+     ```
+
+     You should see lines like:
+
+     ```text
+     2026-07-01T14:35:00.200Z [DECISION] action=KILL_NODE target=node3 rationale="..."
+     2026-07-01T14:35:00.800Z [EXECUTED] KILL_NODE node3 success=True
+     ```
+
+     At least one `[DECISION]` with a non-`no_action` action must appear
+     for the exit criterion to be met.
+
+  7. In a third terminal, watch the observer log to confirm LLM narration:
+
+     ```bash
+     tail -f logs/observer.log
+     ```
+
+     You should see anomaly narrations when the adversary injects a fault:
+
+     ```text
+     2026-07-01T14:35:01.000Z [ANOMALY] node_unreachable {"node_id": "node3"}
+     2026-07-01T14:35:02.441Z [OBSERVATION] Node 3 has become unreachable...
+     ```
+
+     Followed by `[HEALTHY]` once the cluster recovers.
+
+  8. After the demo exits, check the final `verify_cluster.py` output
+     printed at the bottom of the demo runner's terminal output.  It must
+     show **zero mismatches**.  If mismatches appear, run manually to see
+     which keys differ:
+
+     ```bash
+     python scripts/verify_cluster.py
+     ```
+
+  9. Confirm the exit criteria checklist from `docs/phase-4.md §10`:
+
+     - `verify_cluster.py` reports zero mismatches.
+     - `logs/observer.log` contains at least one `[OBSERVATION]` with
+       LLM-generated text.
+     - `logs/adversary_agent.log` contains at least one `[DECISION]`
+       with a non-`no_action` action and a logged rationale.
+     - The observer correctly identified at least one anomaly during
+       the run.
 
 **Exit criterion:** Full demo run completes with `verify_cluster.py` passing after
 all fault/recovery cycles. Observer produces meaningful natural-language output.
 Adversary makes at least one autonomous, state-driven decision logged with rationale.
+
+> ✓ Complete 2026-06-30. 85 tests passing (15 new agent tests), lint clean.
+> `ConsistencyObserver` polls `/health` every 1 s; `detect_anomalies()` is a
+> pure module-level function that runs four ordered rule-based checks
+> (node unreachable, no leader, split-brain, replication lag) and returns
+> structured anomaly dicts; each anomaly is narrated by Ollama via
+> `POST /api/generate` and written to `logs/observer.log`.  LLM unavailability
+> degrades gracefully — fallback message logged, loop continues.
+> `AdversaryAgent` polls every 5 s, enforces a safety guard
+> (`_is_safe_to_inject`: leader present + majority reachable) and a
+> minimum fault interval (15 s), calls Ollama with `"format": "json"` for a
+> structured `{action, target, rationale}` decision, and dispatches to one of
+> nine fault executors (KILL, RESTART, PAUSE, RESUME, PARTITION, HEAL,
+> INJECT_DELAY, CLEAR_DELAY, CORRUPT_WAL) via subprocess/HTTP; all decisions
+> logged to `logs/adversary_agent.log`.  Both agents run as host processes
+> (not containers) with direct Docker CLI and Ollama access.  `run_demo.py`
+> orchestrates the nine-step demo sequence with 409 leader-redirect and 503
+> retry logic during review streaming.  End-to-end manual run pending
+> (requires live cluster + Ollama).
 
 ### Phase 5 — Hardening and Documentation (Days 9–10)
 

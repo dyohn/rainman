@@ -1,0 +1,55 @@
+{
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "model": "llama3.2",
+    "timeout_s": 30
+  },
+  "observer": {
+    "poll_interval_s": 1.0,
+    "replication_lag_threshold": 10,
+    "log_path": "logs/observer.log"
+  },
+  "adversary": {
+    "poll_interval_s": 5.0,
+    "min_fault_interval_s": 15.0,
+    "log_path": "logs/adversary_agent.log"
+  },
+  "faults": [
+    {
+      "id": "KILL_NODE",
+      "description": "Hard-kill the service (docker compose kill). Node disappears until restarted."
+    },
+    {
+      "id": "RESTART_NODE",
+      "description": "Restart the service (docker compose restart). Node replays WAL on startup."
+    },
+    {
+      "id": "PAUSE_NODE",
+      "description": "Freeze the container (docker compose pause). Node stops responding but is not crashed."
+    },
+    {
+      "id": "RESUME_NODE",
+      "description": "Unfreeze a paused container (docker compose unpause)."
+    },
+    {
+      "id": "PARTITION_NODE",
+      "description": "Disconnect node from the bridge network (docker network disconnect). Real network isolation."
+    },
+    {
+      "id": "HEAL_PARTITION",
+      "description": "Reconnect an isolated node (docker network connect)."
+    },
+    {
+      "id": "INJECT_DELAY",
+      "description": "Add artificial response delay via POST /admin/inject_delay. Simulates a slow or overloaded node."
+    },
+    {
+      "id": "CLEAR_DELAY",
+      "description": "Clear injected delay (delay_ms=0)."
+    },
+    {
+      "id": "CORRUPT_WAL",
+      "description": "Append malformed JSON to the node's WAL on the host mount. Tests WAL hardening at startup."
+    }
+  ]
+}

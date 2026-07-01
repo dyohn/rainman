@@ -219,3 +219,4 @@ __marimo__/
 
 # Local data files (may be very large)
 /data/raw/
+/data/node*/
